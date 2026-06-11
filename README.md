@@ -1,1 +1,8 @@
 # Nook-Trading-System
+cd nook-cloud
+git init
+git add .
+git commit -m "ชาลอน cloud system"
+git remote add origin https://github.com/<username>/nook-cloud.git
+git branch -M main
+git push -u origin main
