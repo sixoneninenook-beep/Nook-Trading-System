@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Nook Trading — Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0d14;--bg2:#111520;--bg3:#161b28;--bg4:#1c2233;--bg5:#222840;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.11);
+  --text:#e8ecf4;--text2:#8892a4;--text3:#545e72;
+  --gold:#f5c842;--gold2:rgba(245,200,66,0.12);
+  --green:#22c98e;--green2:rgba(34,201,142,0.12);
+  --red:#f04f5e;--red2:rgba(240,79,94,0.12);
+  --blue:#4a9eff;--blue2:rgba(74,158,255,0.1);
+  --purple:#a78bfa;--purple2:rgba(167,139,250,0.1);
+  --amber:#f59e0b;--amber2:rgba(245,158,11,0.1);
+  --teal:#2dd4bf;--teal2:rgba(45,212,191,0.1);
+  --ff:'Sora',sans-serif;--fm:'JetBrains Mono',monospace;
+  --nav:220px;--rad:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--ff);background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;font-size:13px}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-thumb{background:var(--bg5);border-radius:2px}
+
+/* ─── SIDEBAR ─── */
+.sidebar{
+  width:var(--nav);flex-shrink:0;
+  background:var(--bg2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;z-index:20;
+}
+.logo-area{
+  padding:16px 16px 14px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.logo-icon{
+  width:34px;height:34px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,#c8950a,#f5c842);
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+}
+.logo-texts .t1{font-size:13px;font-weight:700;letter-spacing:.01em}
+.logo-texts .t2{font-size:9px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-top:1px}
+
+.nav-group{padding:8px 8px 0;flex:1;overflow-y:auto}
+.nav-label{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);padding:8px 10px 4px}
+.nav-item{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 10px;border-radius:8px;cursor:pointer;
+  color:var(--text2);font-size:12.5px;font-weight:500;
+  transition:all .15s;margin-bottom:1px;position:relative;
+}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:rgba(74,158,255,0.1);color:var(--blue)}
+.nav-item.active::before{
+  content:'';position:absolute;left:0;top:4px;bottom:4px;
+  width:2.5px;border-radius:0 2px 2px 0;background:var(--blue);
+}
+.nav-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.nav-badge{
+  margin-left:auto;font-size:9px;font-weight:700;
+  padding:1px 6px;border-radius:20px;
+  background:var(--red2);color:var(--red);
+}
+.nav-badge.green{background:var(--green2);color:var(--green)}
+
+.sidebar-footer{border-top:1px solid var(--border);padding:10px 10px 12px}
+.status-card{
+  background:var(--bg3);border-radius:8px;padding:8px 10px;
+  display:flex;align-items:center;gap:8px;margin-bottom:6px;
+}
+.s-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;position:relative}
+.s-dot::after{content:'';position:absolute;inset:-3px;border-radius:50%;border:1px solid var(--green);animation:pulse 2s ease-in-out infinite;opacity:.5}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.8);opacity:0}}
+.s-info .s1{font-size:11px;font-weight:600;color:var(--green)}
+.s-info .s2{font-size:9.5px;color:var(--text3)}
+.sync-row{display:flex;align-items:center;gap:6px;padding:2px 10px}
+.sync-row span{font-size:10px;color:var(--text3)}
+
+/* ─── MAIN ─── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ─── TOP BAR ─── */
+.topbar{
+  height:50px;flex-shrink:0;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 18px;gap:12px;
+}
+.tb-title{font-size:15px;font-weight:700;letter-spacing:.01em}
+.tb-sub{font-size:11px;color:var(--text3);margin-left:4px}
+.tb-spacer{flex:1}
+.tb-pill{
+  display:flex;align-items:center;gap:5px;
+  background:var(--green2);border:1px solid rgba(34,201,142,0.2);
+  border-radius:20px;padding:4px 10px;
+  font-size:10px;font-weight:600;color:var(--green);font-family:var(--fm);
+}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.tb-select{
+  background:var(--bg3);border:1px solid var(--border2);color:var(--text);
+  font-family:var(--ff);font-size:12px;border-radius:7px;padding:5px 9px;
+  outline:none;cursor:pointer;
+}
+.tb-btn{
+  background:var(--bg3);border:1px solid var(--border2);color:var(--text2);
+  font-family:var(--ff);font-size:11px;border-radius:7px;padding:5px 12px;
+  cursor:pointer;transition:all .15s;
+}
+.tb-btn:hover{color:var(--text)}
+.tb-btn.accent{background:var(--blue2);border-color:rgba(74,158,255,0.25);color:var(--blue)}
+.user-chip{display:flex;align-items:center;gap:8px;border-left:1px solid var(--border);padding-left:12px}
+.u-avatar{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#2d4a8a,#4a6ac0);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+.u-name{font-size:11.5px;font-weight:600}
+.u-plan{font-size:9.5px;color:var(--gold)}
+
+/* ─── PAGE CONTENT ─── */
+.pages{flex:1;overflow:hidden;position:relative}
+.page{position:absolute;inset:0;overflow-y:auto;padding:16px;display:none;flex-direction:column;gap:14px}
+.page.active{display:flex}
+
+/* ─── SHARED CARD ─── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rad);overflow:hidden}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--border)}
+.card-title{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);display:flex;align-items:center;gap:6px}
+.card-body{padding:14px}
+.card-actions{display:flex;gap:6px}
+.ca-btn{font-size:10px;padding:3px 9px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);cursor:pointer;transition:all .15s}
+.ca-btn:hover{color:var(--text)}
+.ca-btn.active{background:var(--blue2);border-color:rgba(74,158,255,0.25);color:var(--blue)}
+
+/* ─── STAT CARDS ROW ─── */
+.stats-row{display:grid;gap:10px}
+.stat-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--rad);
+  padding:13px 15px;
+}
+.sc-label{font-size:9.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:5px}
+.sc-value{font-family:var(--fm);font-size:20px;font-weight:700;color:var(--text);line-height:1}
+.sc-sub{font-size:10.5px;margin-top:4px;display:flex;align-items:center;gap:4px}
+.up{color:var(--green)}.dn{color:var(--red)}.neu{color:var(--text3)}
+
+/* ─── TABLE ─── */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.tbl td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text2)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--bg3);color:var(--text)}
+.tbl .mono{font-family:var(--fm)}
+
+/* ─── BADGES ─── */
+.badge{font-size:9.5px;font-weight:600;padding:2px 8px;border-radius:20px}
+.b-buy{background:var(--green2);color:var(--green)}
+.b-sell{background:var(--red2);color:var(--red)}
+.b-long{background:var(--green2);color:var(--green)}
+.b-short{background:var(--red2);color:var(--red)}
+.b-high{background:var(--red2);color:var(--red)}
+.b-med{background:var(--amber2);color:var(--amber)}
+.b-low{background:var(--green2);color:var(--green)}
+.b-blue{background:var(--blue2);color:var(--blue)}
+.b-gold{background:var(--gold2);color:var(--gold)}
+.b-purple{background:var(--purple2);color:var(--purple)}
+.b-teal{background:var(--teal2);color:var(--teal)}
+
+/* ─── PROGRESS BAR ─── */
+.pbar-wrap{flex:1;height:5px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.pbar{height:100%;border-radius:3px}
+
+/* ─── MINI CHART ─── */
+.mini-chart-wrap{height:40px;overflow:hidden}
+
+/* ─── GRID HELPERS ─── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.g5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.g-auto{display:grid;grid-template-columns:1fr 320px;gap:12px}
+.g-auto2{display:grid;grid-template-columns:1fr 260px;gap:12px}
+
+/* ─── AGENT CARD ─── */
+.agent-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.ag-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--rad);
+  padding:12px 10px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;
+}
+.ag-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.ag-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:.2s}
+.ag-card:hover::after{opacity:1}
+.ag-golden::after{background:var(--gold)}
+.ag-bolt::after{background:var(--blue)}
+.ag-rex::after{background:var(--red)}
+.ag-hana::after{background:var(--purple)}
+.ag-coco::after{background:var(--green)}
+.ag-luna::after{background:var(--teal)}
+.ag-emo{font-size:30px;text-align:center;margin-bottom:7px}
+.ag-name{font-size:12px;font-weight:700;text-align:center;margin-bottom:1px}
+.ag-role{font-size:9px;color:var(--text3);text-align:center;margin-bottom:6px}
+.ag-skills{font-size:9.5px;color:var(--text2);text-align:center;line-height:1.6;margin-bottom:8px}
+.ag-foot{display:flex;align-items:center;justify-content:space-between;padding-top:7px;border-top:1px solid var(--border)}
+.ag-conf-lbl{font-size:9px;color:var(--text3)}
+.ag-conf-val{font-family:var(--fm);font-size:12px;font-weight:700}
+
+/* ─── SECTION SEPARATOR ─── */
+.sec-sep{display:flex;align-items:center;gap:8px}
+.sep-line{flex:1;height:1px;background:var(--border)}
+.sep-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);white-space:nowrap}
+
+/* ─── CHAT BUBBLE ─── */
+.bubble{display:flex;gap:10px;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.b-avatar{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.b-body2{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:4px 9px 9px 9px;padding:9px 11px;font-size:11.5px;line-height:1.65;color:var(--text2)}
+.b-name2{font-size:11px;font-weight:700;margin-bottom:3px}
+.b-hl{color:var(--text);font-weight:600}
+
+/* ─── RISK GAUGE ─── */
+.risk-gauge{position:relative;width:100px;height:52px;margin:0 auto}
+.risk-gauge svg{overflow:visible}
+.rg-num{position:absolute;bottom:0;left:50%;transform:translateX(-50%);font-family:var(--fm);font-size:18px;font-weight:700;text-align:center}
+
+/* ─── TOGGLE ─── */
+.toggle{display:flex;gap:1px;background:var(--bg3);border-radius:7px;padding:2px}
+.tg-btn{font-size:10px;padding:4px 10px;border-radius:5px;cursor:pointer;color:var(--text3);font-weight:500;transition:all .15s}
+.tg-btn.on{background:var(--bg4);color:var(--text)}
+
+/* ─── ENTRY BOX ─── */
+.entry-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.eg-cell{background:var(--bg3);border-radius:8px;padding:9px 11px}
+.eg-label{font-size:9px;color:var(--text3);margin-bottom:3px}
+.eg-val{font-family:var(--fm);font-size:13px;font-weight:700}
+
+/* ─── TIMELINE ─── */
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:12px}
+.tl-line-wrap{display:flex;flex-direction:column;align-items:center}
+.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.tl-line{width:1px;flex:1;background:var(--border);margin:3px 0}
+.tl-content{flex:1;padding-bottom:14px}
+.tl-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:1px}
+.tl-desc{font-size:10.5px;color:var(--text3)}
+
+/* ─── CHIP ROW ─── */
+.chip-row{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-size:10px;padding:3px 9px;border-radius:20px;cursor:pointer;border:1px solid var(--border2);color:var(--text2);background:var(--bg3);transition:all .15s}
+.chip:hover,.chip.on{background:var(--blue2);border-color:rgba(74,158,255,0.25);color:var(--blue)}
+
+/* ─── SPARKLINE ─── */
+.sparkline{width:100%;height:32px}
+
+/* ─── COLOR DOTS ─── */
+.cdot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+
+/* ─── AGENT STATUS CHIP ─── */
+.asc{font-size:9px;font-weight:600;padding:1.5px 6px;border-radius:20px}
+.asc-on{background:var(--green2);color:var(--green)}
+.asc-think{background:var(--amber2);color:var(--amber)}
+.asc-wait{background:var(--bg4);color:var(--text3)}
+
+/* typing dots */
+.typing{display:inline-flex;gap:3px;align-items:center}
+.typing span{width:4px;height:4px;border-radius:50%;background:var(--amber);animation:td .8s ease-in-out infinite}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes td{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+
+/* ─── EXECUTE BTN ─── */
+.exec-btn{
+  width:100%;padding:12px;border-radius:9px;border:none;
+  background:linear-gradient(135deg,#3b7de8,#5b9fff);color:#fff;
+  font-family:var(--ff);font-size:13px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:all .2s;
+}
+.exec-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(74,158,255,.3)}
+
+/* ─── DONUT ─── */
+.donut-wrap{display:flex;align-items:center;gap:14px}
+.donut-legend{display:flex;flex-direction:column;gap:5px}
+.dl-row{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10px}
+.dl-name{color:var(--text2);display:flex;align-items:center;gap:5px}
+.dl-pct{font-family:var(--fm);color:var(--text3)}
+
+/* ─── HEATMAP ─── */
+.heatmap-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.hm-cell{height:28px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:9px;font-weight:600;cursor:pointer;transition:opacity .15s}
+.hm-cell:hover{opacity:.7}
+
+/* ─── SCROLLABLE SECTION ─── */
+.scroll-x{overflow-x:auto;padding-bottom:4px}
+.nowrap{white-space:nowrap}
+
+/* ─── BACK TEST CHART ─── */
+.bt-chart{height:120px;position:relative;overflow:hidden}
+.bt-chart svg{width:100%;height:100%}
+
+/* ─── SETTING FORM ─── */
+.sf-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border)}
+.sf-row:last-child{border-bottom:none}
+.sf-label{font-size:12.5px;font-weight:500;color:var(--text)}
+.sf-sub{font-size:10.5px;color:var(--text3);margin-top:1px}
+.sf-ctrl input[type=range]{accent-color:var(--blue);width:100px}
+.sf-ctrl select{background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--ff);font-size:11px;border-radius:6px;padding:4px 8px;outline:none}
+.switch{width:36px;height:20px;border-radius:10px;background:var(--bg4);border:1px solid var(--border2);cursor:pointer;position:relative;transition:.2s}
+.switch.on{background:rgba(34,201,142,.3);border-color:rgba(34,201,142,.4)}
+.switch::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:var(--text3);top:2px;left:2px;transition:.2s}
+.switch.on::after{background:var(--green);left:18px}
+
+/* ─── RESPONSIVE · PC + Mobile ─── */
+.hamburger{display:none;background:none;border:1px solid var(--border2);color:var(--text);border-radius:8px;width:34px;height:34px;font-size:16px;cursor:pointer;flex-shrink:0}
+.scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:25}
+@media (max-width:1000px){
+  .g4{grid-template-columns:repeat(2,1fr)}
+  .agent-grid{grid-template-columns:repeat(3,1fr)}
+  .g-auto{grid-template-columns:1fr}
+}
+@media (max-width:760px){
+  .hamburger{display:inline-flex;align-items:center;justify-content:center}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;height:100%;transform:translateX(-100%);transition:transform .25s ease;z-index:30}
+  body.nav-open .sidebar{transform:translateX(0)}
+  body.nav-open .scrim{display:block}
+  .topbar{flex-wrap:wrap;height:auto;gap:8px;padding:10px 12px}
+  .tb-spacer{display:none}
+  .user-chip{display:none}
+  .page{padding:12px}
+  .g4{grid-template-columns:1fr 1fr}
+  .agent-grid{grid-template-columns:repeat(2,1fr)}
+  .tbl{min-width:560px}
+  .page{overflow-x:auto}
+  .agent-grid[style*="repeat(3"]{grid-template-columns:repeat(2,1fr)!important}
+}
+@media (max-width:430px){
+  .g4{grid-template-columns:1fr}
+  .agent-grid{grid-template-columns:1fr 1fr}
+  .tb-title{font-size:14px}
+  .tb-select,.tb-btn{font-size:11px;padding:5px 8px}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ SIDEBAR ═══════ -->
+<aside class="sidebar">
+  <div class="logo-area">
+    <div class="logo-icon">🐾</div>
+    <div class="logo-texts">
+      <div class="t1">Nook Trading</div>
+      <div class="t2">Command Center</div>
+    </div>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Main</div>
+    <div class="nav-item active" data-page="command" onclick="nav(this)">
+      <span class="nav-icon">🏠</span>Command Center
+    </div>
+    <div class="nav-item" data-page="agents" onclick="nav(this)">
+      <span class="nav-icon">🤖</span>AI Agents
+      <span class="nav-badge green">6</span>
+    </div>
+    <div class="nav-label">Trading</div>
+    <div class="nav-item" data-page="portfolio" onclick="nav(this)">
+      <span class="nav-icon">💼</span>Portfolio
+    </div>
+    <div class="nav-item" data-page="opportunities" onclick="nav(this)">
+      <span class="nav-icon">🎯</span>Opportunities
+      <span class="nav-badge">4</span>
+    </div>
+    <div class="nav-item" data-page="risk" onclick="nav(this)">
+      <span class="nav-icon">🛡️</span>Risk Center
+    </div>
+    <div class="nav-label">Research</div>
+    <div class="nav-item" data-page="intel" onclick="nav(this)">
+      <span class="nav-icon">🌐</span>Market Intel
+    </div>
+    <div class="nav-item" data-page="strategies" onclick="nav(this)">
+      <span class="nav-icon">📊</span>Strategies
+    </div>
+    <div class="nav-item" data-page="backtest" onclick="nav(this)">
+      <span class="nav-icon">🔬</span>Backtesting
+    </div>
+    <div class="nav-label">System</div>
+    <div class="nav-item" data-page="reports" onclick="nav(this)">
+      <span class="nav-icon">📋</span>Reports
+    </div>
+    <div class="nav-item" data-page="settings" onclick="nav(this)">
+      <span class="nav-icon">⚙️</span>Settings
+    </div>
+  </div>
+  <div class="sidebar-footer">
+    <div class="status-card">
+      <div class="s-dot"></div>
+      <div class="s-info">
+        <div class="s1">All Agents Online</div>
+        <div class="s2">6 / 6 Active</div>
+      </div>
+    </div>
+    <div class="sync-row">
+      <span>🔄</span>
+      <span>Team Sync · 2 min ago</span>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════ MAIN ═══════ -->
+<div class="scrim" onclick="closeNav()"></div>
+<div class="main">
+  <!-- TOP BAR -->
+  <div class="topbar" id="topbar">
+    <button class="hamburger" onclick="toggleNav()" aria-label="Menu">☰</button>
+    <div>
+      <span class="tb-title" id="tbTitle">Command Center</span>
+      <span class="tb-sub" id="tbSub">Overview · Live</span>
+    </div>
+    <div class="tb-spacer"></div>
+    <div class="tb-pill" id="livePill"><div class="live-dot"></div>Live</div>
+    <select class="tb-select" id="pairSel" onchange="updatePair()">
+      <option>XAUUSD</option><option>EURUSD</option><option>BTCUSD</option><option>USDJPY</option><option>US30</option>
+    </select>
+    <button class="tb-btn accent" id="actionBtn">▶ War Room</button>
+    <div class="user-chip">
+      <div class="u-avatar">NK</div>
+      <div>
+        <div class="u-name">Nook Capital</div>
+        <div class="u-plan">⭐ Pro Plan</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ PAGES ═══════ -->
+  <div class="pages">
+
+    <!-- ══ PAGE: Command Center ══ -->
+    <div class="page active" id="page-command">
+      <!-- Metric row -->
+      <div class="g4">
+        <div class="stat-card" style="border-top:2px solid var(--gold)">
+          <div class="sc-label">Portfolio Value</div>
+          <div class="sc-value">$2,842,721</div>
+          <div class="sc-sub"><span class="up">▲ +2.35%</span><span class="neu">24h</span></div>
+        </div>
+        <div class="stat-card" style="border-top:2px solid var(--green)">
+          <div class="sc-label">Today's P&L</div>
+          <div class="sc-value" style="color:var(--green)">$64,827</div>
+          <div class="sc-sub"><span class="up">▲ +2.33%</span></div>
+        </div>
+        <div class="stat-card" style="border-top:2px solid var(--blue)">
+          <div class="sc-label">Open Positions</div>
+          <div class="sc-value">12</div>
+          <div class="sc-sub"><span class="neu">6 Long · 6 Short</span></div>
+        </div>
+        <div class="stat-card" style="border-top:2px solid var(--amber)">
+          <div class="sc-label">AI Confidence</div>
+          <div class="sc-value" style="color:var(--green)">82%</div>
+          <div class="sc-sub"><span style="color:var(--amber)">Risk: Medium</span></div>
+        </div>
+      </div>
+
+      <!-- Agent cards -->
+      <div class="agent-grid">
+        <div class="ag-card ag-golden"><div class="ag-emo">🐕</div><div class="ag-name">Golden 👑</div><div class="ag-role">Chief Investment Officer</div><div class="ag-skills">Strategic Allocation<br>Rebalancing Portfolio</div><div class="ag-foot"><span class="ag-conf-lbl">Confidence</span><span class="ag-conf-val" style="color:var(--gold)">85%</span></div></div>
+        <div class="ag-card ag-bolt"><div class="ag-emo">🐩</div><div class="ag-name">Bolt</div><div class="ag-role">Quant Analyst</div><div class="ag-skills">Technical Analysis<br>Scanning Signals</div><div class="ag-foot"><span class="ag-conf-lbl">Confidence</span><span class="ag-conf-val" style="color:var(--blue)">78%</span></div></div>
+        <div class="ag-card ag-rex"><div class="ag-emo">🦮</div><div class="ag-name">Rex</div><div class="ag-role">Risk Manager</div><div class="ag-skills">Risk Monitoring<br>Drawdown Control</div><div class="ag-foot"><span class="ag-conf-lbl">Confidence</span><span class="ag-conf-val" style="color:var(--green)">90%</span></div></div>
+        <div class="ag-card ag-hana"><div class="ag-emo">🐕‍🦺</div><div class="ag-name">Hana</div><div class="ag-role">Market Researcher</div><div class="ag-skills">News & Sentiment<br>Earnings & Events</div><div class="ag-foot"><span class="ag-conf-lbl">Confidence</span><span class="ag-conf-val" style="color:var(--purple)">72%</span></div></div>
+        <div class="ag-card ag-coco"><div class="ag-emo">🐈</div><div class="ag-name">Coco</div><div class="ag-role">Trade Executor</div><div class="ag-skills">Order Execution<br>Managing Positions</div><div class="ag-foot"><span class="ag-conf-lbl">Confidence</span><span class="ag-conf-val" style="color:var(--green)">88%</span></div></div>
+        <div class="ag-card ag-luna"><div class="ag-emo">🐺</div><div class="ag-name">Luna</div><div class="ag-role">Macro Economist</div><div class="ag-skills">Macro Analysis<br>Global Economy</div><div class="ag-foot"><span class="ag-conf-lbl">Confidence</span><span class="ag-conf-val" style="color:var(--teal)">80%</span></div></div>
+      </div>
+
+      <div class="g-auto">
+        <!-- Discussion -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">💬 AI Team Discussion</span>
+            <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--green);font-family:var(--fm)"><span class="live-dot"></span>Live</span>
+          </div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:8px;max-height:240px;overflow-y:auto">
+            <div class="bubble"><div class="b-avatar" style="background:var(--blue2)">🐩</div><div class="b-body2"><div class="b-name2" style="color:var(--blue)">Bolt</div>XAUUSD ยืนเหนือ $4,050 อีกครั้ง. RSI 58.4, MACD เริ่มกลับตัว — <span class="b-hl">momentum strong</span>.</div></div>
+            <div class="bubble"><div class="b-avatar" style="background:var(--teal2)">🐺</div><div class="b-body2"><div class="b-name2" style="color:var(--teal)">Luna</div>Fed rate cut odds ขึ้น 65%. DXY อ่อนค่า <span class="b-hl">tailwind สำหรับ gold</span>.</div></div>
+            <div class="bubble"><div class="b-avatar" style="background:var(--red2)">🦮</div><div class="b-body2"><div class="b-name2" style="color:var(--red)">Rex</div>Drawdown 3.2% ใน safe zone. <span class="b-hl">Position size ≤ 0.6 lot</span> แนะนำ (vol สูง).</div></div>
+            <div class="bubble"><div class="b-avatar" style="background:var(--gold2)">🐕</div><div class="b-body2"><div class="b-name2" style="color:var(--gold)">Golden 👑</div><span class="b-hl">Team consensus: LONG XAUUSD @ $4,065 · TP $4,250 · SL $3,980 · Approved ✅</span></div></div>
+          </div>
+        </div>
+        <!-- Team Summary -->
+        <div class="card">
+          <div class="card-head"><span class="card-title">🏆 Active Signal</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:8px">
+            <div style="background:var(--gold2);border:1px solid rgba(245,200,66,.2);border-radius:8px;padding:10px 12px">
+              <div style="font-size:9px;font-weight:700;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px">🏆 High Conviction</div>
+              <div style="font-size:15px;font-weight:700">XAUUSD — LONG ↑</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3)">Entry</span><span class="mono" style="font-family:var(--fm);color:var(--blue)">$4,060–$4,080</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3)">Stop Loss</span><span class="mono" style="font-family:var(--fm);color:var(--red)">$3,980</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3)">Target</span><span class="mono" style="font-family:var(--fm);color:var(--green)">$4,250</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3)">R:R</span><span class="mono" style="font-family:var(--fm);color:var(--gold)">1 : 2.4</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:11.5px;padding:4px 0"><span style="color:var(--text3)">Confidence</span><span style="font-family:var(--fm);color:var(--green)">82%</span></div>
+            </div>
+            <button class="exec-btn" onclick="alert('Opening War Room...')">🚀 Execute Plan</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ Goals · Head Agent (synced from shared state) ══ -->
+      <div class="g-auto" style="margin-top:14px">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">🎯 Goals · เป้าหมาย</span>
+            <button class="ca-btn" onclick="editGoals()">✏️ Edit</button>
+          </div>
+          <div class="card-body" id="goalsBody" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">🐕 Golden 👑 — Head Agent Analysis</span>
+            <button class="ca-btn" onclick="runHeadAnalysis()">🔄 Re-run</button>
+          </div>
+          <div class="card-body" id="headBody" style="font-size:11.5px;line-height:1.7;color:var(--text2)"></div>
+        </div>
+      </div>
+
+      <!-- ══ Gold Buy/Sell Scenarios (placeholder for live feed) ══ -->
+      <div class="card" style="margin-top:14px">
+        <div class="card-head">
+          <span class="card-title">🥇 XAUUSD — Buy / Sell Scenarios</span>
+          <span style="font-size:9px;color:var(--text3)">Placeholder · เชื่อม live feed ภายหลัง · ไม่ใช่คำแนะนำการลงทุน</span>
+        </div>
+        <div class="card-body">
+          <div id="goldBody" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: AI Agents ══ -->
+    <div class="page" id="page-agents">
+      <div class="agent-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="ag-card ag-golden" style="padding:16px">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div style="font-size:36px">🐕</div>
+            <div>
+              <div class="ag-name" style="font-size:14px;text-align:left">Golden 👑</div>
+              <div class="ag-role" style="text-align:left;font-size:10px">Chief Investment Officer</div>
+              <span class="asc asc-on">Online</span>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.7;margin-bottom:10px">
+            ✦ Strategic capital allocation<br>✦ Final trade approval<br>✦ Portfolio rebalancing<br>✦ Team coordination
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+            <span class="badge b-gold">CIO</span><span class="badge b-blue">Macro</span><span class="badge b-teal">Strategy</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div><div style="font-size:9px;color:var(--text3)">Today's Decisions</div><div style="font-family:var(--fm);font-size:16px;font-weight:700;color:var(--gold)">8</div></div>
+            <div><div style="font-size:9px;color:var(--text3)">Accuracy</div><div style="font-family:var(--fm);font-size:16px;font-weight:700;color:var(--green)">85%</div></div>
+            <button class="tb-btn accent" style="font-size:11px">Chat</button>
+          </div>
+        </div>
+        <div class="ag-card ag-bolt" style="padding:16px">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div style="font-size:36px">🐩</div>
+            <div>
+              <div class="ag-name" style="font-size:14px;text-align:left">Bolt</div>
+              <div class="ag-role" style="text-align:left;font-size:10px">Quant Analyst</div>
+              <span class="asc asc-think"><span class="typing"><span></span><span></span><span></span></span> Scanning</span>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.7;margin-bottom:10px">
+            ✦ RSI · MACD · Bollinger<br>✦ Multi-timeframe analysis<br>✦ Entry/exit precision<br>✦ Volume profile
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+            <span class="badge b-blue">TA</span><span class="badge b-purple">Quant</span><span class="badge b-teal">Algo</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div><div style="font-size:9px;color:var(--text3)">Signals Today</div><div style="font-family:var(--fm);font-size:16px;font-weight:700;color:var(--blue)">24</div></div>
+            <div><div style="font-size:9px;color:var(--text3)">Accuracy</div><div style="font-family:var(--fm);font-size:16px;font-weight:700;color:var(--green)">78%</div></div>
+            <button class="tb-btn accent" style="font-size:11px">Chat</button>
+          </div>
+        </div>
+        <div class="ag-card ag-rex" style="padding:16px">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div style="font-size:36px">🦮</div>
+            <div>
+              <div class="ag-name" style="font-size:14px;text-align:left">Rex</div>
+              <div class="ag-role" style="text-align:left;font-size:10px">Risk Manager</div>
+              <span class="asc asc-on">Online</span>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.7;margin-bottom:10px">
+            ✦ Position sizing & VaR<br>✦ Drawdown monitoring<br>✦ Correlation analysis<br>✦ Stop loss optimization
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+            <span class="badge b-high">Risk</span><span class="badge b-med">VaR</span><span class="badge b-blue">Size</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div><div style="font-size:9px;color:var(--text3)">Checks Today</div><div style="font-family:var(--fm);font-size:16px;font-weight:700;color:var(--red)">31</div></div>
+            <div><div style="font-size:9px;color:var(--text3)">Accuracy</div><div style="font-family:var(--fm);font-size:16px;font-weight:700;color:var(--green)">90%</div></div>
+            <button class="tb-btn accent" style="font-size:11px">Chat</button>
+          </div>
+        </div>
+        <div class="ag-card ag-hana" style="padding:16px">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div style="font-size:36px">🐕‍🦺</div>
+            <div>
+              <div class="ag-name" style="font-size:14px;text-align:left">Hana</div>
+              <div class="ag-role" style="text-align:left;font-size:10px">Market Researcher</div>
+              <span class="asc asc-think"><span class="typing"><span></span><span></span><span></span></span> Reading</span>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.7;margin-bottom:10px">
+            ✦ News flow analysis<br>✦ COT report monitoring<br>✦ Sentiment scoring<br>✦ Event calendar
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+            <span class="badge b-purple">NLP</span><span class="badge b-blue">News</span><span class="badge b-teal">COT</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div><div style="font-size:9px;color:var(--text3)">Articles Read</div><div style="font-family:var(--fm);font-size:16px;font-weight:700;color:var(--purple)">142</div></div>
+            <div><div style="font-size:9px;color:var(--text3)">Accuracy</div><div style="font-family:var(--fm);font-size:16px;font-weight:700;color:var(--amber)">72%</div></div>
+            <button class="tb-btn accent" style="font-size:11px">Chat</button>
+          </div>
+        </div>
+        <div class="ag-card ag-coco" style="padding:16px">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div style="font-size:36px">🐈</div>
+            <div>
+              <div class="ag-name" style="font-size:14px;text-align:left">Coco</div>
+              <div class="ag-role" style="text-align:left;font-size:10px">Trade Executor</div>
+              <span class="asc asc-on">Ready</span>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.7;margin-bottom:10px">
+            ✦ Limit / market orders<br>✦ Partial close strategy<br>✦ Trailing stop management<br>✦ Slippage optimization
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+            <span class="badge b-green">Execution</span><span class="badge b-blue">Orders</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div><div style="font-size:9px;color:var(--text3)">Orders Today</div><div style="font-family:var(--fm);font-size:16px;font-weight:700;color:var(--green)">7</div></div>
+            <div><div style="font-size:9px;color:var(--text3)">Fill Rate</div><div style="font-family:var(--fm);font-size:16px;font-weight:700;color:var(--green)">99%</div></div>
+            <button class="tb-btn accent" style="font-size:11px">Chat</button>
+          </div>
+        </div>
+        <div class="ag-card ag-luna" style="padding:16px">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div style="font-size:36px">🐺</div>
+            <div>
+              <div class="ag-name" style="font-size:14px;text-align:left">Luna</div>
+              <div class="ag-role" style="text-align:left;font-size:10px">Macro Economist</div>
+              <span class="asc asc-on">Online</span>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text2);line-height:1.7;margin-bottom:10px">
+            ✦ Fed / ECB watch<br>✦ DXY & yield curve<br>✦ Geopolitical risk<br>✦ Global macro outlook
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+            <span class="badge b-teal">Macro</span><span class="badge b-blue">Fed</span><span class="badge b-gold">DXY</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div><div style="font-size:9px;color:var(--text3)">Reports Read</div><div style="font-family:var(--fm);font-size:16px;font-weight:700;color:var(--teal)">18</div></div>
+            <div><div style="font-size:9px;color:var(--text3)">Accuracy</div><div style="font-family:var(--fm);font-size:16px;font-weight:700;color:var(--green)">80%</div></div>
+            <button class="tb-btn accent" style="font-size:11px">Chat</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- War Room quick link -->
+      <div class="card">
+        <div class="card-body" style="display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:3px">🤝 Agent War Room — XAUUSD Session Active</div>
+            <div style="font-size:11px;color:var(--text3)">Round 3 · Entry Proposal Phase · Golden กำลังสรุป final decision</div>
+          </div>
+          <button class="exec-btn" style="width:160px" onclick="window.open('nook_agent_warroom.html')">Open War Room →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: Portfolio ══ -->
+    <div class="page" id="page-portfolio">
+      <div class="g4">
+        <div class="stat-card"><div class="sc-label">Total Value</div><div class="sc-value">$2,842,721</div><div class="sc-sub"><span class="up">▲ +$64,827</span><span class="neu">today</span></div></div>
+        <div class="stat-card"><div class="sc-label">Unrealized P&L</div><div class="sc-value" style="color:var(--green)">+$38,240</div><div class="sc-sub"><span class="up">+1.36%</span></div></div>
+        <div class="stat-card"><div class="sc-label">Open Positions</div><div class="sc-value">12</div><div class="sc-sub"><span class="neu">6 Long · 6 Short</span></div></div>
+        <div class="stat-card"><div class="sc-label">Win Rate (30D)</div><div class="sc-value" style="color:var(--green)">68.4%</div><div class="sc-sub"><span class="up">▲ +2.1%</span></div></div>
+      </div>
+      <div class="g-auto">
+        <!-- Positions table -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">📂 Open Positions</span>
+            <div class="card-actions">
+              <button class="ca-btn active">All</button><button class="ca-btn">Long</button><button class="ca-btn">Short</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="tbl">
+              <thead><tr><th>Symbol</th><th>Side</th><th>Size</th><th>Entry</th><th>Current</th><th>P&L</th><th>SL / TP</th><th>Agent</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">XAUUSD</td><td><span class="badge b-long">LONG</span></td><td class="mono">0.8 lot</td><td class="mono">$4,041.20</td><td class="mono">$4,096.45</td><td class="mono up">+$4,420</td><td class="mono" style="color:var(--text3)">$3,980 / $4,250</td><td>🐈 Coco</td></tr>
+                <tr><td class="mono">EURUSD</td><td><span class="badge b-long">LONG</span></td><td class="mono">1.2 lot</td><td class="mono">$1.0798</td><td class="mono">$1.0824</td><td class="mono up">+$312</td><td class="mono" style="color:var(--text3)">$1.074 / $1.092</td><td>🐈 Coco</td></tr>
+                <tr><td class="mono">USDJPY</td><td><span class="badge b-short">SHORT</span></td><td class="mono">1.0 lot</td><td class="mono">$157.42</td><td class="mono">$156.28</td><td class="mono up">+$1,140</td><td class="mono" style="color:var(--text3)">$158.5 / $154.0</td><td>🐈 Coco</td></tr>
+                <tr><td class="mono">BTCUSD</td><td><span class="badge b-long">LONG</span></td><td class="mono">0.15 lot</td><td class="mono">$67,820</td><td class="mono">$67,245</td><td class="mono dn">-$862</td><td class="mono" style="color:var(--text3)">$65,000 / $71,000</td><td>🐈 Coco</td></tr>
+                <tr><td class="mono">US30</td><td><span class="badge b-long">LONG</span></td><td class="mono">0.5 lot</td><td class="mono">$39,420</td><td class="mono">$39,826</td><td class="mono up">+$2,030</td><td class="mono" style="color:var(--text3)">$38,800 / $41,000</td><td>🐈 Coco</td></tr>
+                <tr><td class="mono">GBPUSD</td><td><span class="badge b-short">SHORT</span></td><td class="mono">0.8 lot</td><td class="mono">$1.2742</td><td class="mono">$1.2689</td><td class="mono up">+$424</td><td class="mono" style="color:var(--text3)">$1.282 / $1.258</td><td>🐈 Coco</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Allocation -->
+        <div class="card">
+          <div class="card-head"><span class="card-title">🍩 Allocation</span></div>
+          <div class="card-body">
+            <div class="donut-wrap">
+              <svg viewBox="0 0 80 80" width="80" height="80" style="flex-shrink:0">
+                <circle cx="40" cy="40" r="32" fill="none" stroke="#1c2233" stroke-width="12"/>
+                <circle cx="40" cy="40" r="32" fill="none" stroke="#f5c842" stroke-width="12" stroke-dasharray="84.5 116.5" stroke-dashoffset="50.3" transform="rotate(-90 40 40)"/>
+                <circle cx="40" cy="40" r="32" fill="none" stroke="#4a9eff" stroke-width="12" stroke-dasharray="56.3 144.7" stroke-dashoffset="-34.2" transform="rotate(-90 40 40)"/>
+                <circle cx="40" cy="40" r="32" fill="none" stroke="#a78bfa" stroke-width="12" stroke-dasharray="30.2 170.8" stroke-dashoffset="-90.5" transform="rotate(-90 40 40)"/>
+                <circle cx="40" cy="40" r="32" fill="none" stroke="#22c98e" stroke-width="12" stroke-dasharray="20.1 180.9" stroke-dashoffset="-120.7" transform="rotate(-90 40 40)"/>
+                <circle cx="40" cy="40" r="32" fill="none" stroke="#545e72" stroke-width="12" stroke-dasharray="10.1 190.9" stroke-dashoffset="-140.8" transform="rotate(-90 40 40)"/>
+              </svg>
+              <div class="donut-legend">
+                <div class="dl-row"><span class="dl-name"><span class="cdot" style="background:#f5c842"></span>Gold (XAU)</span><span class="dl-pct">42%</span></div>
+                <div class="dl-row"><span class="dl-name"><span class="cdot" style="background:#4a9eff"></span>Forex</span><span class="dl-pct">28%</span></div>
+                <div class="dl-row"><span class="dl-name"><span class="cdot" style="background:#a78bfa"></span>Crypto</span><span class="dl-pct">15%</span></div>
+                <div class="dl-row"><span class="dl-name"><span class="cdot" style="background:#22c98e"></span>Indices</span><span class="dl-pct">10%</span></div>
+                <div class="dl-row"><span class="dl-name"><span class="cdot" style="background:#545e72"></span>Cash</span><span class="dl-pct">5%</span></div>
+              </div>
+            </div>
+            <div style="margin-top:14px;display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;justify-content:space-between;font-size:11px;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3)">Total Return (30D)</span><span class="up" style="font-family:var(--fm)">+4.27%</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--text3)">Sharpe Ratio</span><span style="font-family:var(--fm);color:var(--blue)">1.82</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;padding:5px 0"><span style="color:var(--text3)">Max Drawdown</span><span style="font-family:var(--fm);color:var(--amber)">-3.2%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: Opportunities ══ -->
+    <div class="page" id="page-opportunities">
+      <div class="g4">
+        <div class="stat-card"><div class="sc-label">Active Signals</div><div class="sc-value" style="color:var(--green)">4</div><div class="sc-sub"><span class="neu">High conviction</span></div></div>
+        <div class="stat-card"><div class="sc-label">Avg Confidence</div><div class="sc-value">78%</div><div class="sc-sub"><span class="up">Above threshold</span></div></div>
+        <div class="stat-card"><div class="sc-label">Best R:R Today</div><div class="sc-value" style="color:var(--gold)">1:3.1</div><div class="sc-sub"><span class="neu">XAUUSD Long</span></div></div>
+        <div class="stat-card"><div class="sc-label">Pending Review</div><div class="sc-value" style="color:var(--amber)">2</div><div class="sc-sub"><span class="caution" style="color:var(--amber)">Needs approval</span></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">🎯 Signal Board</span>
+          <div class="card-actions">
+            <button class="ca-btn active">All</button><button class="ca-btn">Buy</button><button class="ca-btn">Sell</button><button class="ca-btn">Pending</button>
+          </div>
+        </div>
+        <table class="tbl">
+          <thead><tr><th>Symbol</th><th>Direction</th><th>Entry Zone</th><th>SL</th><th>TP1 / TP2</th><th>R:R</th><th>Confidence</th><th>Source Agent</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr><td class="mono">XAUUSD</td><td><span class="badge b-long">LONG</span></td><td class="mono">$4,060–$4,080</td><td class="mono" style="color:var(--red)">$3,980</td><td class="mono" style="color:var(--green)">$4,180 / $4,250</td><td class="mono" style="color:var(--gold)">1:2.4</td><td><div style="display:flex;align-items:center;gap:6px"><div class="pbar-wrap" style="width:60px"><div class="pbar" style="width:82%;background:var(--green)"></div></div><span class="mono">82%</span></div></td><td>🐩 Bolt + 🐺 Luna</td><td><span class="badge b-gold">Approved</span></td><td><button class="ca-btn active" style="font-size:10px">Execute</button></td></tr>
+            <tr><td class="mono">EURUSD</td><td><span class="badge b-long">LONG</span></td><td class="mono">$1.0850</td><td class="mono" style="color:var(--red)">$1.0790</td><td class="mono" style="color:var(--green)">$1.092 / $1.098</td><td class="mono" style="color:var(--gold)">1:2.1</td><td><div style="display:flex;align-items:center;gap:6px"><div class="pbar-wrap" style="width:60px"><div class="pbar" style="width:74%;background:var(--green)"></div></div><span class="mono">74%</span></div></td><td>🐩 Bolt</td><td><span class="badge b-blue">Reviewing</span></td><td><button class="ca-btn" style="font-size:10px">Review</button></td></tr>
+            <tr><td class="mono">BTCUSD</td><td><span class="badge b-long">LONG</span></td><td class="mono">$66,800</td><td class="mono" style="color:var(--red)">$65,000</td><td class="mono" style="color:var(--green)">$69,500 / $72,000</td><td class="mono" style="color:var(--amber)">1:1.9</td><td><div style="display:flex;align-items:center;gap:6px"><div class="pbar-wrap" style="width:60px"><div class="pbar" style="width:68%;background:var(--amber)"></div></div><span class="mono">68%</span></div></td><td>🐩 Bolt</td><td><span class="badge b-med">Pending</span></td><td><button class="ca-btn" style="font-size:10px">Review</button></td></tr>
+            <tr><td class="mono">USDJPY</td><td><span class="badge b-short">SHORT</span></td><td class="mono">$157.20</td><td class="mono" style="color:var(--red)">$158.40</td><td class="mono" style="color:var(--green)">$155.0 / $153.0</td><td class="mono" style="color:var(--gold)">1:2.8</td><td><div style="display:flex;align-items:center;gap:6px"><div class="pbar-wrap" style="width:60px"><div class="pbar" style="width:76%;background:var(--green)"></div></div><span class="mono">76%</span></div></td><td>🐺 Luna + 🐩 Bolt</td><td><span class="badge b-gold">Approved</span></td><td><button class="ca-btn active" style="font-size:10px">Execute</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Upcoming events -->
+      <div class="card">
+        <div class="card-head"><span class="card-title">📅 Economic Calendar — Today</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:12px;padding:8px 10px;background:var(--red2);border:1px solid rgba(240,79,94,.15);border-radius:8px">
+            <span style="font-family:var(--fm);font-size:11px;color:var(--text3);width:56px">10:00 AM</span>
+            <span class="badge b-high">High</span>
+            <div style="flex:1"><div style="font-size:12px;font-weight:600">US CPI Data</div><div style="font-size:10px;color:var(--text3)">Forecast: 3.1% · Previous: 3.2%</div></div>
+            <span style="font-size:10px;color:var(--red)">In 2h 15m</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px">
+            <span style="font-family:var(--fm);font-size:11px;color:var(--text3);width:56px">02:00 PM</span>
+            <span class="badge b-high">High</span>
+            <div style="flex:1"><div style="font-size:12px;font-weight:600">FOMC Meeting Minutes</div><div style="font-size:10px;color:var(--text3)">Fed rate decision discussion</div></div>
+            <span style="font-size:10px;color:var(--text3)">In 6h 15m</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:8px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:8px">
+            <span style="font-family:var(--fm);font-size:11px;color:var(--text3);width:56px">08:30 PM</span>
+            <span class="badge b-med">Med</span>
+            <div style="flex:1"><div style="font-size:12px;font-weight:600">US PPI Data</div><div style="font-size:10px;color:var(--text3)">Producer Price Index</div></div>
+            <span style="font-size:10px;color:var(--text3)">In 12h 45m</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: Risk Center ══ -->
+    <div class="page" id="page-risk">
+      <div class="g4">
+        <div class="stat-card" style="border-top:2px solid var(--amber)"><div class="sc-label">Max Drawdown</div><div class="sc-value" style="color:var(--amber)">3.2%</div><div class="sc-sub"><span class="neu">Limit: 5%</span></div></div>
+        <div class="stat-card"><div class="sc-label">VaR (95%)</div><div class="sc-value">2.45%</div><div class="sc-sub"><span class="up">Acceptable</span></div></div>
+        <div class="stat-card"><div class="sc-label">Exposure</div><div class="sc-value">68%</div><div class="sc-sub"><span class="neu">Free margin $284k</span></div></div>
+        <div class="stat-card"><div class="sc-label">Leverage Used</div><div class="sc-value" style="color:var(--green)">1.35×</div><div class="sc-sub"><span class="up">Conservative</span></div></div>
+      </div>
+      <div class="g3">
+        <!-- Portfolio Risk -->
+        <div class="card">
+          <div class="card-head"><span class="card-title">🛡️ Portfolio Risk Meters</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px"><span style="color:var(--text3)">Overall Exposure</span><span class="mono">68%</span></div>
+              <div class="pbar-wrap" style="height:7px"><div class="pbar" style="width:68%;background:var(--amber)"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px"><span style="color:var(--text3)">Daily Drawdown</span><span class="mono dn">-1.8%</span></div>
+              <div class="pbar-wrap" style="height:7px"><div class="pbar" style="width:18%;background:var(--red)"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px"><span style="color:var(--text3)">Correlation Risk</span><span class="mono up">Low</span></div>
+              <div class="pbar-wrap" style="height:7px"><div class="pbar" style="width:25%;background:var(--green)"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px"><span style="color:var(--text3)">Liquidity Score</span><span class="mono" style="color:var(--green)">A</span></div>
+              <div class="pbar-wrap" style="height:7px"><div class="pbar" style="width:90%;background:var(--green)"></div></div>
+            </div>
+            <div style="background:var(--green2);border:1px solid rgba(34,201,142,.2);border-radius:7px;padding:8px 10px;text-align:center;font-size:11px;font-weight:600;color:var(--green)">
+              ✓ Risk within acceptable limits
+            </div>
+          </div>
+        </div>
+        <!-- Position risk -->
+        <div class="card">
+          <div class="card-head"><span class="card-title">📊 Position Risk Breakdown</span></div>
+          <div style="overflow-x:auto">
+            <table class="tbl">
+              <thead><tr><th>Symbol</th><th>Risk $</th><th>Risk %</th><th>VaR</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">XAUUSD</td><td class="mono">$38,400</td><td class="mono">1.35%</td><td class="mono">2.1%</td><td><span class="badge b-low">Safe</span></td></tr>
+                <tr><td class="mono">EURUSD</td><td class="mono">$21,600</td><td class="mono">0.76%</td><td class="mono">1.4%</td><td><span class="badge b-low">Safe</span></td></tr>
+                <tr><td class="mono">USDJPY</td><td class="mono">$12,000</td><td class="mono">0.42%</td><td class="mono">1.1%</td><td><span class="badge b-low">Safe</span></td></tr>
+                <tr><td class="mono">BTCUSD</td><td class="mono">$27,000</td><td class="mono">0.95%</td><td class="mono">4.2%</td><td><span class="badge b-med">Watch</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Rex watchlist -->
+        <div class="card">
+          <div class="card-head"><span class="card-title">🦮 Rex Alerts</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:7px">
+            <div style="background:var(--amber2);border:1px solid rgba(245,158,11,.2);border-radius:7px;padding:9px 11px">
+              <div style="font-size:10px;font-weight:700;color:var(--amber);margin-bottom:2px">⚠️ CPI Event Risk</div>
+              <div style="font-size:11px;color:var(--text2)">XAUUSD — US CPI in 2h. Consider reducing size 20% before release.</div>
+            </div>
+            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:9px 11px">
+              <div style="font-size:10px;font-weight:700;color:var(--blue);margin-bottom:2px">ℹ️ Correlation Notice</div>
+              <div style="font-size:11px;color:var(--text2)">XAUUSD & EURUSD correlation = +0.71. Both long → concentrated risk.</div>
+            </div>
+            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:9px 11px">
+              <div style="font-size:10px;font-weight:700;color:var(--green);margin-bottom:2px">✓ Drawdown OK</div>
+              <div style="font-size:11px;color:var(--text2)">Current 3.2% drawdown well within 5% daily limit.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: Market Intel ══ -->
+    <div class="page" id="page-intel">
+      <div class="g-auto2">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <!-- Watchlist -->
+          <div class="card">
+            <div class="card-head"><span class="card-title">👁 Live Watchlist</span></div>
+            <table class="tbl">
+              <thead><tr><th>Symbol</th><th>Price</th><th>Change</th><th>Volume</th><th>Trend</th><th>Signal</th></tr></thead>
+              <tbody>
+                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#f5c842"></span><span class="mono">XAUUSD</span></div></td><td class="mono">$4,096.45</td><td class="mono up">+1.28%</td><td class="mono">142k</td><td><span class="badge b-long">↑ Up</span></td><td><span class="badge b-gold">BUY</span></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#4a9eff"></span><span class="mono">EURUSD</span></div></td><td class="mono">$1.0824</td><td class="mono up">+0.35%</td><td class="mono">89k</td><td><span class="badge b-long">↑ Up</span></td><td><span class="badge b-long">BUY</span></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#f59e0b"></span><span class="mono">BTCUSD</span></div></td><td class="mono">$67,245</td><td class="mono dn">-0.45%</td><td class="mono">$2.1B</td><td><span class="badge b-med">→ Flat</span></td><td><span class="badge b-blue">HOLD</span></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#a78bfa"></span><span class="mono">USDJPY</span></div></td><td class="mono">$156.28</td><td class="mono up">+0.18%</td><td class="mono">67k</td><td><span class="badge b-short">↓ Down</span></td><td><span class="badge b-sell">SELL</span></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#22c98e"></span><span class="mono">US30</span></div></td><td class="mono">$39,826</td><td class="mono up">+0.62%</td><td class="mono">34k</td><td><span class="badge b-long">↑ Up</span></td><td><span class="badge b-long">BUY</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Sentiment heatmap -->
+          <div class="card">
+            <div class="card-head"><span class="card-title">🌡️ Market Sentiment Heatmap (7D)</span></div>
+            <div class="card-body">
+              <div style="display:flex;gap:6px;margin-bottom:8px;font-size:10px;color:var(--text3)">
+                <span>Mon</span><span style="flex:1"></span><span>Tue</span><span style="flex:1"></span><span>Wed</span><span style="flex:1"></span><span>Thu</span><span style="flex:1"></span><span>Fri</span><span style="flex:1"></span><span>Sat</span><span style="flex:1"></span><span>Sun</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <div style="display:flex;align-items:center;gap:4px"><span style="font-size:10px;color:var(--text3);width:50px;flex-shrink:0">XAUUSD</span><div style="flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:3px"><div class="hm-cell" style="background:rgba(34,201,142,.3)">+1.2</div><div class="hm-cell" style="background:rgba(34,201,142,.5)">+2.1</div><div class="hm-cell" style="background:rgba(34,201,142,.2)">+0.8</div><div class="hm-cell" style="background:rgba(240,79,94,.2)">-0.4</div><div class="hm-cell" style="background:rgba(34,201,142,.6)">+2.8</div><div class="hm-cell" style="background:rgba(34,201,142,.4)">+1.5</div><div class="hm-cell" style="background:rgba(34,201,142,.7)">+3.1</div></div></div>
+                <div style="display:flex;align-items:center;gap:4px"><span style="font-size:10px;color:var(--text3);width:50px;flex-shrink:0">EURUSD</span><div style="flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:3px"><div class="hm-cell" style="background:rgba(240,79,94,.3)">-0.9</div><div class="hm-cell" style="background:rgba(34,201,142,.2)">+0.5</div><div class="hm-cell" style="background:rgba(34,201,142,.4)">+1.1</div><div class="hm-cell" style="background:rgba(34,201,142,.3)">+0.8</div><div class="hm-cell" style="background:rgba(240,79,94,.1)">-0.2</div><div class="hm-cell" style="background:rgba(34,201,142,.3)">+0.7</div><div class="hm-cell" style="background:rgba(34,201,142,.2)">+0.35</div></div></div>
+                <div style="display:flex;align-items:center;gap:4px"><span style="font-size:10px;color:var(--text3);width:50px;flex-shrink:0">BTCUSD</span><div style="flex:1;display:grid;grid-template-columns:repeat(7,1fr);gap:3px"><div class="hm-cell" style="background:rgba(34,201,142,.5)">+3.2</div><div class="hm-cell" style="background:rgba(240,79,94,.4)">-2.1</div><div class="hm-cell" style="background:rgba(34,201,142,.2)">+1.0</div><div class="hm-cell" style="background:rgba(34,201,142,.4)">+2.4</div><div class="hm-cell" style="background:rgba(240,79,94,.2)">-0.8</div><div class="hm-cell" style="background:rgba(240,79,94,.3)">-1.2</div><div class="hm-cell" style="background:rgba(240,79,94,.1)">-0.45</div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- News feed -->
+        <div class="card">
+          <div class="card-head"><span class="card-title">📰 Hana's News Feed</span></div>
+          <div style="display:flex;flex-direction:column;gap:0;max-height:520px;overflow-y:auto">
+            <div style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px"><span class="badge b-high">High</span><span class="badge b-gold">Gold</span><span style="font-size:9.5px;color:var(--text3);margin-left:auto">09:15 AM</span></div>
+              <div style="font-size:11.5px;font-weight:600;margin-bottom:2px">Fed Officials Signal Rate Cut Possible in September</div>
+              <div style="font-size:10.5px;color:var(--text3)">Bullish for gold — rate cut = weaker USD</div>
+            </div>
+            <div style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px"><span class="badge b-high">High</span><span class="badge b-blue">FX</span><span style="font-size:9.5px;color:var(--text3);margin-left:auto">08:42 AM</span></div>
+              <div style="font-size:11.5px;font-weight:600;margin-bottom:2px">ECB Holds Rates, EUR Strengthens vs USD</div>
+              <div style="font-size:10.5px;color:var(--text3)">EURUSD bullish signal confirmed</div>
+            </div>
+            <div style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px"><span class="badge b-med">Med</span><span class="badge b-purple">Crypto</span><span style="font-size:9.5px;color:var(--text3);margin-left:auto">07:30 AM</span></div>
+              <div style="font-size:11.5px;font-weight:600;margin-bottom:2px">BTC ETF Inflows Hit $480M — Institutional Demand</div>
+              <div style="font-size:10.5px;color:var(--text3)">Watch for BTC breakout above $68k</div>
+            </div>
+            <div style="padding:10px 12px;cursor:pointer" onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background=''">
+              <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px"><span class="badge b-low">Low</span><span class="badge b-teal">Macro</span><span style="font-size:9.5px;color:var(--text3);margin-left:auto">06:15 AM</span></div>
+              <div style="font-size:11.5px;font-weight:600;margin-bottom:2px">China PBoC Buys Gold for 18th Consecutive Month</div>
+              <div style="font-size:10.5px;color:var(--text3)">Long-term structural support for gold</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: Strategies ══ -->
+    <div class="page" id="page-strategies">
+      <div class="g3">
+        <div class="stat-card"><div class="sc-label">Active Strategies</div><div class="sc-value">4</div><div class="sc-sub"><span class="neu">2 performing above target</span></div></div>
+        <div class="stat-card"><div class="sc-label">Best Strategy (30D)</div><div class="sc-value" style="color:var(--green)">Trend Following</div><div class="sc-sub"><span class="up">+6.35%</span></div></div>
+        <div class="stat-card"><div class="sc-label">Combined Return</div><div class="sc-value" style="color:var(--green)">+4.27%</div><div class="sc-sub"><span class="up">vs benchmark +1.8%</span></div></div>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div class="card-head"><span class="card-title">📊 Strategy Performance</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:12px">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+                <div><div style="font-size:12.5px;font-weight:600">Trend Following</div><div style="font-size:10px;color:var(--text3)">XAUUSD · EURUSD · US30</div></div>
+                <span class="mono up">+6.35%</span>
+              </div>
+              <div class="pbar-wrap" style="height:7px"><div class="pbar" style="width:80%;background:var(--green)"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+                <div><div style="font-size:12.5px;font-weight:600">Breakout Hunter</div><div style="font-size:10px;color:var(--text3)">All pairs · H4 breakout</div></div>
+                <span class="mono up">+4.12%</span>
+              </div>
+              <div class="pbar-wrap" style="height:7px"><div class="pbar" style="width:55%;background:var(--blue)"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+                <div><div style="font-size:12.5px;font-weight:600">News Momentum</div><div style="font-size:10px;color:var(--text3)">Event-driven plays</div></div>
+                <span class="mono up">+3.27%</span>
+              </div>
+              <div class="pbar-wrap" style="height:7px"><div class="pbar" style="width:42%;background:var(--amber)"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+                <div><div style="font-size:12.5px;font-weight:600">Mean Reversion</div><div style="font-size:10px;color:var(--text3)">Range-bound markets</div></div>
+                <span class="mono dn">-0.85%</span>
+              </div>
+              <div class="pbar-wrap" style="height:7px"><div class="pbar" style="width:8%;background:var(--red)"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">🤖 Strategy → Agent Mapping</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+            <div style="background:var(--bg3);border-radius:8px;padding:10px 12px">
+              <div style="font-size:11.5px;font-weight:600;margin-bottom:5px">Trend Following</div>
+              <div style="display:flex;gap:5px"><span class="badge" style="background:var(--blue2);color:var(--blue)">🐩 Bolt (TA)</span><span class="badge" style="background:var(--teal2);color:var(--teal)">🐺 Luna (Macro)</span><span class="badge" style="background:var(--green2);color:var(--green)">🐈 Coco (Execute)</span></div>
+            </div>
+            <div style="background:var(--bg3);border-radius:8px;padding:10px 12px">
+              <div style="font-size:11.5px;font-weight:600;margin-bottom:5px">Breakout Hunter</div>
+              <div style="display:flex;gap:5px"><span class="badge" style="background:var(--blue2);color:var(--blue)">🐩 Bolt (TA)</span><span class="badge" style="background:var(--red2);color:var(--red)">🦮 Rex (Risk)</span><span class="badge" style="background:var(--green2);color:var(--green)">🐈 Coco (Execute)</span></div>
+            </div>
+            <div style="background:var(--bg3);border-radius:8px;padding:10px 12px">
+              <div style="font-size:11.5px;font-weight:600;margin-bottom:5px">News Momentum</div>
+              <div style="display:flex;gap:5px"><span class="badge" style="background:var(--purple2);color:var(--purple)">🐕‍🦺 Hana (News)</span><span class="badge" style="background:var(--teal2);color:var(--teal)">🐺 Luna (Macro)</span><span class="badge" style="background:var(--green2);color:var(--green)">🐈 Coco</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: Backtesting ══ -->
+    <div class="page" id="page-backtest">
+      <div class="g-auto2">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="g4">
+            <div class="stat-card"><div class="sc-label">Total Return</div><div class="sc-value" style="color:var(--green)">+127.4%</div><div class="sc-sub"><span class="neu">3 years backtest</span></div></div>
+            <div class="stat-card"><div class="sc-label">Sharpe Ratio</div><div class="sc-value" style="color:var(--blue)">2.14</div><div class="sc-sub"><span class="up">Excellent</span></div></div>
+            <div class="stat-card"><div class="sc-label">Win Rate</div><div class="sc-value" style="color:var(--green)">67.2%</div><div class="sc-sub"><span class="up">Consistent</span></div></div>
+            <div class="stat-card"><div class="sc-label">Max Drawdown</div><div class="sc-value" style="color:var(--amber)">-8.4%</div><div class="sc-sub"><span class="neu">Jan 2023</span></div></div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">📈 Equity Curve (3Y Backtest)</span>
+              <div class="toggle"><span class="tg-btn on">Trend</span><span class="tg-btn">Breakout</span><span class="tg-btn">Combined</span></div>
+            </div>
+            <div class="card-body">
+              <div class="bt-chart">
+                <svg viewBox="0 0 600 120" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="btg" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#22c98e" stop-opacity=".25"/>
+                      <stop offset="100%" stop-color="#22c98e" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <!-- grid -->
+                  <line x1="0" y1="30" x2="600" y2="30" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+                  <line x1="0" y1="60" x2="600" y2="60" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+                  <line x1="0" y1="90" x2="600" y2="90" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
+                  <!-- curve -->
+                  <path d="M0 110 C20 108,40 105,60 100 S100 90,120 88 S160 70,180 72 S220 50,240 55 S270 30,300 35 S330 20,360 18 S400 10,420 8 S460 5,480 7 S530 3,560 5 L600 2"
+                    fill="none" stroke="#22c98e" stroke-width="1.8" stroke-linecap="round"/>
+                  <path d="M0 110 C20 108,40 105,60 100 S100 90,120 88 S160 70,180 72 S220 50,240 55 S270 30,300 35 S330 20,360 18 S400 10,420 8 S460 5,480 7 S530 3,560 5 L600 2 L600 120 L0 120Z"
+                    fill="url(#btg)"/>
+                  <!-- drawdown markers -->
+                  <circle cx="200" cy="68" r="3" fill="var(--amber)" opacity=".8"/>
+                  <line x1="200" y1="68" x2="200" y2="0" stroke="var(--amber)" stroke-width="0.8" stroke-dasharray="3,3" opacity=".4"/>
+                  <text x="203" y="15" style="fill:var(--amber);font-size:8px;font-family:var(--fm)">-8.4%</text>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="card-title">📋 Monthly Returns</span></div>
+            <div class="card-body">
+              <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:4px">
+                <div style="text-align:center"><div style="font-size:8.5px;color:var(--text3);margin-bottom:3px">Jan</div><div style="background:rgba(34,201,142,.35);border-radius:4px;padding:4px 0;font-size:9.5px;font-family:var(--fm);color:var(--green)">+3.2</div></div>
+                <div style="text-align:center"><div style="font-size:8.5px;color:var(--text3);margin-bottom:3px">Feb</div><div style="background:rgba(240,79,94,.25);border-radius:4px;padding:4px 0;font-size:9.5px;font-family:var(--fm);color:var(--red)">-1.1</div></div>
+                <div style="text-align:center"><div style="font-size:8.5px;color:var(--text3);margin-bottom:3px">Mar</div><div style="background:rgba(34,201,142,.25);border-radius:4px;padding:4px 0;font-size:9.5px;font-family:var(--fm);color:var(--green)">+2.4</div></div>
+                <div style="text-align:center"><div style="font-size:8.5px;color:var(--text3);margin-bottom:3px">Apr</div><div style="background:rgba(34,201,142,.45);border-radius:4px;padding:4px 0;font-size:9.5px;font-family:var(--fm);color:var(--green)">+4.8</div></div>
+                <div style="text-align:center"><div style="font-size:8.5px;color:var(--text3);margin-bottom:3px">May</div><div style="background:rgba(34,201,142,.2);border-radius:4px;padding:4px 0;font-size:9.5px;font-family:var(--fm);color:var(--green)">+1.7</div></div>
+                <div style="text-align:center"><div style="font-size:8.5px;color:var(--text3);margin-bottom:3px">Jun</div><div style="background:rgba(240,79,94,.2);border-radius:4px;padding:4px 0;font-size:9.5px;font-family:var(--fm);color:var(--red)">-0.8</div></div>
+                <div style="text-align:center"><div style="font-size:8.5px;color:var(--text3);margin-bottom:3px">Jul</div><div style="background:rgba(34,201,142,.35);border-radius:4px;padding:4px 0;font-size:9.5px;font-family:var(--fm);color:var(--green)">+3.5</div></div>
+                <div style="text-align:center"><div style="font-size:8.5px;color:var(--text3);margin-bottom:3px">Aug</div><div style="background:rgba(34,201,142,.25);border-radius:4px;padding:4px 0;font-size:9.5px;font-family:var(--fm);color:var(--green)">+2.1</div></div>
+                <div style="text-align:center"><div style="font-size:8.5px;color:var(--text3);margin-bottom:3px">Sep</div><div style="background:rgba(34,201,142,.4);border-radius:4px;padding:4px 0;font-size:9.5px;font-family:var(--fm);color:var(--green)">+4.1</div></div>
+                <div style="text-align:center"><div style="font-size:8.5px;color:var(--text3);margin-bottom:3px">Oct</div><div style="background:rgba(240,79,94,.15);border-radius:4px;padding:4px 0;font-size:9.5px;font-family:var(--fm);color:var(--red)">-0.3</div></div>
+                <div style="text-align:center"><div style="font-size:8.5px;color:var(--text3);margin-bottom:3px">Nov</div><div style="background:rgba(34,201,142,.3);border-radius:4px;padding:4px 0;font-size:9.5px;font-family:var(--fm);color:var(--green)">+2.8</div></div>
+                <div style="text-align:center"><div style="font-size:8.5px;color:var(--text3);margin-bottom:3px">Dec</div><div style="background:rgba(34,201,142,.5);border-radius:4px;padding:4px 0;font-size:9.5px;font-family:var(--fm);color:var(--green)">+5.1</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Config panel -->
+        <div class="card">
+          <div class="card-head"><span class="card-title">⚙️ Backtest Config</span></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+            <div><div style="font-size:10px;color:var(--text3);margin-bottom:4px">Strategy</div><select class="tb-select" style="width:100%"><option>Trend Following</option><option>Breakout Hunter</option><option>News Momentum</option><option>Combined</option></select></div>
+            <div><div style="font-size:10px;color:var(--text3);margin-bottom:4px">Symbol</div><select class="tb-select" style="width:100%"><option>XAUUSD</option><option>EURUSD</option><option>All Pairs</option></select></div>
+            <div><div style="font-size:10px;color:var(--text3);margin-bottom:4px">Timeframe</div><select class="tb-select" style="width:100%"><option>H4</option><option>H1</option><option>D1</option></select></div>
+            <div><div style="font-size:10px;color:var(--text3);margin-bottom:4px">Period</div><select class="tb-select" style="width:100%"><option>3 Years (2022-2024)</option><option>1 Year (2024)</option><option>6 Months</option></select></div>
+            <div><div style="font-size:10px;color:var(--text3);margin-bottom:4px">Initial Capital</div><input style="width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:6px;padding:6px 10px;font-family:var(--fm);font-size:12px;outline:none" value="$1,000,000"/></div>
+            <div><div style="font-size:10px;color:var(--text3);margin-bottom:4px">Risk per Trade</div><select class="tb-select" style="width:100%"><option>1%</option><option selected>2%</option><option>3%</option></select></div>
+            <button class="exec-btn" style="margin-top:4px" onclick="alert('Running backtest...')">🔬 Run Backtest</button>
+            <div style="font-size:10px;color:var(--text3);text-align:center">Last run: 09:05 AM · 2.3s</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: Reports ══ -->
+    <div class="page" id="page-reports">
+      <div class="g3">
+        <div class="stat-card"><div class="sc-label">Monthly P&L</div><div class="sc-value" style="color:var(--green)">+$118,420</div><div class="sc-sub"><span class="up">+4.27% return</span></div></div>
+        <div class="stat-card"><div class="sc-label">Total Trades (30D)</div><div class="sc-value">84</div><div class="sc-sub"><span class="neu">57 Win · 27 Loss</span></div></div>
+        <div class="stat-card"><div class="sc-label">Avg Trade Duration</div><div class="sc-value">2.4d</div><div class="sc-sub"><span class="neu">Swing trading style</span></div></div>
+      </div>
+      <div class="g2">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">📋 Trade History</span>
+            <div class="card-actions">
+              <button class="ca-btn">Export CSV</button><button class="ca-btn">Export PDF</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="tbl">
+              <thead><tr><th>Date</th><th>Symbol</th><th>Side</th><th>Entry</th><th>Exit</th><th>P&L $</th><th>P&L %</th><th>Duration</th><th>Agent</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">Jun 18</td><td class="mono">XAUUSD</td><td><span class="badge b-long">LONG</span></td><td class="mono">$3,985</td><td class="mono">$4,090</td><td class="mono up">+$5,840</td><td class="mono up">+2.52%</td><td class="mono">3d</td><td>🐩 Bolt</td></tr>
+                <tr><td class="mono">Sep 15</td><td class="mono">EURUSD</td><td><span class="badge b-long">LONG</span></td><td class="mono">$1.0742</td><td class="mono">$1.0820</td><td class="mono up">+$936</td><td class="mono up">+0.73%</td><td class="mono">2d</td><td>🐩 Bolt</td></tr>
+                <tr><td class="mono">Sep 12</td><td class="mono">BTCUSD</td><td><span class="badge b-short">SHORT</span></td><td class="mono">$58,200</td><td class="mono">$55,840</td><td class="mono up">+$3,540</td><td class="mono up">+4.05%</td><td class="mono">1d</td><td>🐺 Luna</td></tr>
+                <tr><td class="mono">Sep 10</td><td class="mono">USDJPY</td><td><span class="badge b-long">LONG</span></td><td class="mono">$143.20</td><td class="mono">$141.85</td><td class="mono dn">-$1,350</td><td class="mono dn">-0.94%</td><td class="mono">4d</td><td>🐩 Bolt</td></tr>
+                <tr><td class="mono">Jun 8</td><td class="mono">XAUUSD</td><td><span class="badge b-long">LONG</span></td><td class="mono">$3,910</td><td class="mono">$4,015</td><td class="mono up">+$4,800</td><td class="mono up">+2.63%</td><td class="mono">5d</td><td>🐺 Luna</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Summary cards -->
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="card">
+            <div class="card-head"><span class="card-title">🤖 Agent Performance</span></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;gap:8px"><span style="font-size:14px">🐩</span><span style="flex:1;font-size:11.5px">Bolt</span><div class="pbar-wrap" style="width:80px"><div class="pbar" style="width:76%;background:var(--blue)"></div></div><span class="mono up" style="font-size:10.5px;width:36px">+$24k</span></div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="font-size:14px">🐺</span><span style="flex:1;font-size:11.5px">Luna</span><div class="pbar-wrap" style="width:80px"><div class="pbar" style="width:68%;background:var(--teal)"></div></div><span class="mono up" style="font-size:10.5px;width:36px">+$18k</span></div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="font-size:14px">🐕‍🦺</span><span style="flex:1;font-size:11.5px">Hana</span><div class="pbar-wrap" style="width:80px"><div class="pbar" style="width:55%;background:var(--purple)"></div></div><span class="mono up" style="font-size:10.5px;width:36px">+$12k</span></div>
+              <div style="display:flex;align-items:center;gap:8px"><span style="font-size:14px">🐕</span><span style="flex:1;font-size:11.5px">Golden</span><div class="pbar-wrap" style="width:80px"><div class="pbar" style="width:90%;background:var(--gold)"></div></div><span class="mono up" style="font-size:10.5px;width:36px">+$32k</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="card-title">📥 Export Reports</span></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:7px">
+              <button class="tb-btn" style="width:100%;text-align:left;padding:9px 12px">📊 Monthly Performance Report</button>
+              <button class="tb-btn" style="width:100%;text-align:left;padding:9px 12px">🤖 Agent Activity Summary</button>
+              <button class="tb-btn" style="width:100%;text-align:left;padding:9px 12px">📋 Full Trade Journal</button>
+              <button class="tb-btn" style="width:100%;text-align:left;padding:9px 12px">🛡️ Risk Assessment Report</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: Settings ══ -->
+    <div class="page" id="page-settings">
+      <div class="g2">
+        <!-- General -->
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="card">
+            <div class="card-head"><span class="card-title">👤 Account</span></div>
+            <div class="card-body">
+              <div class="sf-row"><div><div class="sf-label">Account Name</div><div class="sf-sub">Display name in dashboard</div></div><div class="sf-ctrl"><input style="background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:var(--ff);font-size:12px;border-radius:6px;padding:5px 10px;outline:none;width:160px" value="Nook Capital"/></div></div>
+              <div class="sf-row"><div><div class="sf-label">Plan</div><div class="sf-sub">Current subscription</div></div><div><span class="badge b-gold">⭐ Pro Plan</span></div></div>
+              <div class="sf-row"><div><div class="sf-label">Timezone</div><div class="sf-sub">All timestamps shown in</div></div><div class="sf-ctrl"><select class="tb-select"><option>UTC+7 (Bangkok)</option><option>UTC+0</option><option>UTC-5</option></select></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="card-title">🤖 AI Agent Settings</span></div>
+            <div class="card-body">
+              <div class="sf-row"><div><div class="sf-label">Auto-execute Approved Signals</div><div class="sf-sub">Let Coco execute after Golden approves</div></div><div class="switch" onclick="this.classList.toggle('on')"></div></div>
+              <div class="sf-row"><div><div class="sf-label">Require Manual Confirmation</div><div class="sf-sub">Confirm before every execution</div></div><div class="switch on" onclick="this.classList.toggle('on')"></div></div>
+              <div class="sf-row"><div><div class="sf-label">Min Confidence Threshold</div><div class="sf-sub">Only show signals above this %</div></div><div class="sf-ctrl" style="display:flex;align-items:center;gap:8px"><input type="range" min="50" max="95" value="70" oninput="this.nextElementSibling.textContent=this.value+'%'"/><span style="font-family:var(--fm);font-size:11px;color:var(--blue);width:30px">70%</span></div></div>
+              <div class="sf-row"><div><div class="sf-label">Max Risk Per Trade</div><div class="sf-sub">Rex will reject positions over this</div></div><div class="sf-ctrl"><select class="tb-select"><option>1%</option><option selected>2%</option><option>3%</option><option>5%</option></select></div></div>
+            </div>
+          </div>
+        </div>
+        <!-- Notifications & Broker -->
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="card">
+            <div class="card-head"><span class="card-title">🔔 Notifications</span></div>
+            <div class="card-body">
+              <div class="sf-row"><div><div class="sf-label">New Signal Alert</div><div class="sf-sub">When agent finds high-confidence signal</div></div><div class="switch on" onclick="this.classList.toggle('on')"></div></div>
+              <div class="sf-row"><div><div class="sf-label">Position P&L Alert</div><div class="sf-sub">When position hits +/- 5%</div></div><div class="switch on" onclick="this.classList.toggle('on')"></div></div>
+              <div class="sf-row"><div><div class="sf-label">Economic Events</div><div class="sf-sub">High-impact calendar reminders</div></div><div class="switch on" onclick="this.classList.toggle('on')"></div></div>
+              <div class="sf-row"><div><div class="sf-label">Agent Discussion Updates</div><div class="sf-sub">Real-time war room notifications</div></div><div class="switch" onclick="this.classList.toggle('on')"></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span class="card-title">🔌 Broker Connection</span></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+              <div style="background:var(--green2);border:1px solid rgba(34,201,142,.2);border-radius:7px;padding:9px 12px;display:flex;align-items:center;justify-content:space-between">
+                <div><div style="font-size:11.5px;font-weight:600;color:var(--green)">✓ Connected</div><div style="font-size:10px;color:var(--text3)">MetaTrader 5 · Account #12847</div></div>
+                <button class="tb-btn" style="font-size:10px">Disconnect</button>
+              </div>
+              <div class="sf-row" style="border-bottom:none;padding-bottom:0"><div><div class="sf-label">Default Lot Size</div></div><div class="sf-ctrl"><select class="tb-select"><option>0.01</option><option>0.1</option><option selected>0.8</option><option>1.0</option></select></div></div>
+              <div class="sf-row" style="border-bottom:none;padding-bottom:0"><div><div class="sf-label">Slippage Tolerance</div></div><div class="sf-ctrl"><select class="tb-select"><option>1 pip</option><option selected>2 pips</option><option>5 pips</option></select></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /pages -->
+</div><!-- /main -->
+
+<script>
+const pageConfig = {
+  command:     { title:'Command Center',  sub:'Overview · Live',        btn:'▶ War Room',    pair:true  },
+  agents:      { title:'AI Agents',       sub:'6 / 6 Online',           btn:'🤝 War Room',   pair:false },
+  portfolio:   { title:'Portfolio',       sub:'12 Open Positions',      btn:'+ New Trade',   pair:true  },
+  opportunities:{ title:'Opportunities', sub:'4 High-Conviction Signals',btn:'▶ Run Scan',   pair:true  },
+  risk:        { title:'Risk Center',     sub:'Rex Monitoring Active',  btn:'⚠️ Alerts',    pair:false },
+  intel:       { title:'Market Intel',    sub:'Live Data · Hana Active',btn:'📰 News Feed',  pair:true  },
+  strategies:  { title:'Strategies',      sub:'4 Active Strategies',    btn:'+ New Strategy',pair:false },
+  backtest:    { title:'Backtesting',     sub:'Last run: 09:05 AM',     btn:'▶ Run Test',    pair:false },
+  reports:     { title:'Reports',         sub:'September 2024',         btn:'📥 Export All', pair:false },
+  settings:    { title:'Settings',        sub:'System Configuration',   btn:'💾 Save All',  pair:false },
+};
+
+function toggleNav(){ document.body.classList.toggle('nav-open'); }
+function closeNav(){ document.body.classList.remove('nav-open'); }
+
+function nav(el) {
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  const page = el.dataset.page;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const cfg = pageConfig[page];
+  document.getElementById('tbTitle').textContent = cfg.title;
+  document.getElementById('tbSub').textContent = cfg.sub;
+  document.getElementById('actionBtn').textContent = cfg.btn;
+  document.getElementById('pairSel').style.display = cfg.pair ? '' : 'none';
+  closeNav();
+}
+
+function updatePair() {
+  const p = document.getElementById('pairSel').value;
+  document.getElementById('tbSub').textContent = p + ' · Live';
+}
+
+// Toggle buttons
+document.querySelectorAll('.tg-btn').forEach(b => {
+  b.addEventListener('click', function() {
+    this.closest('.toggle').querySelectorAll('.tg-btn').forEach(x => x.classList.remove('on'));
+    this.classList.add('on');
+  });
+});
+document.querySelectorAll('.ca-btn').forEach(b => {
+  b.addEventListener('click', function() {
+    const group = this.closest('.card-actions');
+    if (group) { group.querySelectorAll('.ca-btn').forEach(x => x.classList.remove('active')); this.classList.add('active'); }
+  });
+});
+
+// ═══ Shared in-memory state — single source of truth, synced across pages ═══
+const NOOK = {
+  goals: {
+    thisMonth: { label:'เดือนนี้ (Jun 2026)', target:'+8% · $220K',  progress:64, note:'โฟกัส gold swing + คุม drawdown' },
+    nextMonth: { label:'เดือนหน้า (Jul 2026)', target:'+6% · $180K',  progress:0,  note:'รอบ earnings + Fed meeting' },
+    year2026:  { label:'ทั้งปี 2026',          target:'+75% · $2.4M', progress:38, note:'ทบต้นกำไร · max DD 12%' },
+  },
+  gold: {
+    bias:'Neutral-Bullish', updated:'—',
+    scenarios:[
+      { type:'BUY ↑',  side:'green', cond:'ยืนเหนือ $4,050 + DXY อ่อนค่า', entry:'$4,060–4,080', sl:'$3,980', tp:'$4,250', rr:'1:2.4' },
+      { type:'SELL ↓', side:'red',   cond:'หลุด $3,980 พร้อม DXY แข็งค่า', entry:'$3,955–3,935', sl:'$4,030', tp:'$3,820', rr:'1:2.0' },
+      { type:'WAIT ⏸', side:'amber', cond:'sideway $3,980–$4,100 · รอ breakout', entry:'—', sl:'—', tp:'—', rr:'—' },
+    ],
+  },
+  head:'',
+};
+
+function renderGoals(){
+  var g=NOOK.goals, el=document.getElementById('goalsBody'); if(!el) return;
+  el.innerHTML=Object.keys(g).map(function(k){var it=g[k];return ''+
+    '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center">'+
+        '<span style="font-weight:600">'+it.label+'</span>'+
+        '<span style="font-family:var(--fm);color:var(--gold);font-size:11px">'+it.target+'</span></div>'+
+      '<div style="height:6px;background:var(--bg5);border-radius:4px;margin:8px 0 4px;overflow:hidden">'+
+        '<div style="height:100%;width:'+it.progress+'%;background:linear-gradient(90deg,var(--gold),var(--green))"></div></div>'+
+      '<div style="font-size:10.5px;color:var(--text3)">'+it.progress+'% · '+it.note+'</div></div>';}).join('');
+}
+function editGoals(){
+  var g=NOOK.goals;
+  Object.keys(g).forEach(function(k){var it=g[k];
+    var t=prompt('เป้าหมาย — '+it.label+' :',it.target); if(t!==null) it.target=t;
+    var p=prompt('ความคืบหน้า % (0-100) — '+it.label+' :',it.progress); if(p!==null&&!isNaN(p)) it.progress=Math.max(0,Math.min(100,+p));
+    var n=prompt('โน้ต — '+it.label+' :',it.note); if(n!==null) it.note=n;});
+  renderGoals(); runHeadAnalysis();
+}
+function renderGold(){
+  var gd=NOOK.gold, el=document.getElementById('goldBody'); if(!el) return;
+  el.innerHTML=gd.scenarios.map(function(s){
+    var c=s.side==='green'?'var(--green)':s.side==='red'?'var(--red)':'var(--amber)';
+    var bg=s.side==='green'?'var(--green2)':s.side==='red'?'var(--red2)':'var(--amber2)';
+    return '<div style="background:'+bg+';border:1px solid '+c+';border-radius:8px;padding:10px 12px">'+
+      '<div style="font-weight:700;color:'+c+';margin-bottom:6px">'+s.type+'</div>'+
+      '<div style="font-size:10.5px;color:var(--text2);margin-bottom:8px;min-height:30px">'+s.cond+'</div>'+
+      '<div style="font-size:11px;font-family:var(--fm);display:flex;flex-direction:column;gap:3px">'+
+        '<span>Entry: '+s.entry+'</span><span style="color:var(--red)">SL: '+s.sl+'</span>'+
+        '<span style="color:var(--green)">TP: '+s.tp+'</span><span style="color:var(--gold)">R:R '+s.rr+'</span></div></div>';}).join('');
+}
+function runHeadAnalysis(){
+  var g=NOOK.goals, gd=NOOK.gold;
+  var t=new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}); gd.updated=t;
+  NOOK.head='<b style="color:var(--gold)">Golden 👑 สรุปทีม</b> · '+t+'<br>'+
+    '• Bias ทองคำ: <b style="color:var(--text)">'+gd.bias+'</b> — มี '+gd.scenarios.length+' แผน (Buy / Sell / Wait)<br>'+
+    '• เป้าเดือนนี้: '+g.thisMonth.target+' (คืบ '+g.thisMonth.progress+'%) · เดือนหน้า: '+g.nextMonth.target+' · ทั้งปี 2026: '+g.year2026.target+' (คืบ '+g.year2026.progress+'%)<br>'+
+    '• คำแนะนำหัวหน้าทีม: เข้า BUY เฉพาะเมื่อยืนเหนือแนวรับ · เคารพ SL · คุม size ตาม Rex<br>'+
+    '<span style="color:var(--text3);font-size:10px">⚠️ ข้อมูลตัวอย่าง · ไม่ใช่คำแนะนำการลงทุน · ตัดสินใจด้วยตนเอง</span>';
+  var el=document.getElementById('headBody'); if(el) el.innerHTML=NOOK.head;
+}
+function syncAll(){ renderGoals(); renderGold(); runHeadAnalysis(); }
+syncAll();
+</script>
+</body>
+</html>
