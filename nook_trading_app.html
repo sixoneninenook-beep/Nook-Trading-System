@@ -861,15 +861,15 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);height:100vh;o
         <div style="display:flex;flex-direction:column;gap:12px">
           <!-- Watchlist -->
           <div class="card">
-            <div class="card-head"><span class="card-title">👁 Live Watchlist</span></div>
+            <div class="card-head"><span class="card-title">👁 Live Watchlist · ข้อมูล 2 ก.ค. 2026</span></div>
             <table class="tbl">
               <thead><tr><th>Symbol</th><th>Price</th><th>Change</th><th>Volume</th><th>Trend</th><th>Signal</th></tr></thead>
               <tbody>
-                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#f5c842"></span><span class="mono">XAUUSD</span></div></td><td class="mono">$4,096.45</td><td class="mono up">+1.28%</td><td class="mono">142k</td><td><span class="badge b-long">↑ Up</span></td><td><span class="badge b-gold">BUY</span></td></tr>
-                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#4a9eff"></span><span class="mono">EURUSD</span></div></td><td class="mono">$1.0824</td><td class="mono up">+0.35%</td><td class="mono">89k</td><td><span class="badge b-long">↑ Up</span></td><td><span class="badge b-long">BUY</span></td></tr>
-                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#f59e0b"></span><span class="mono">BTCUSD</span></div></td><td class="mono">$67,245</td><td class="mono dn">-0.45%</td><td class="mono">$2.1B</td><td><span class="badge b-med">→ Flat</span></td><td><span class="badge b-blue">HOLD</span></td></tr>
-                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#a78bfa"></span><span class="mono">USDJPY</span></div></td><td class="mono">$156.28</td><td class="mono up">+0.18%</td><td class="mono">67k</td><td><span class="badge b-short">↓ Down</span></td><td><span class="badge b-sell">SELL</span></td></tr>
-                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#22c98e"></span><span class="mono">US30</span></div></td><td class="mono">$39,826</td><td class="mono up">+0.62%</td><td class="mono">34k</td><td><span class="badge b-long">↑ Up</span></td><td><span class="badge b-long">BUY</span></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#f5c842"></span><span class="mono">XAUUSD</span></div></td><td class="mono">$4,100.00</td><td class="mono up">+1.50%</td><td class="mono">142k</td><td><span class="badge b-long">↑ Up</span></td><td><span class="badge b-gold">BUY</span></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#4a9eff"></span><span class="mono">EURUSD</span></div></td><td class="mono">$1.1475</td><td class="mono up">+0.15%</td><td class="mono">89k</td><td><span class="badge b-long">↑ Up</span></td><td><span class="badge b-long">BUY</span></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#f59e0b"></span><span class="mono">BTCUSD</span></div></td><td class="mono">$61,959</td><td class="mono up">+4.19%</td><td class="mono">$2.1B</td><td><span class="badge b-med">→ Flat</span></td><td><span class="badge b-blue">HOLD</span></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#a78bfa"></span><span class="mono">USDJPY</span></div></td><td class="mono">$161.30</td><td class="mono dn">-0.05%</td><td class="mono">67k</td><td><span class="badge b-short">↓ Down</span></td><td><span class="badge b-sell">SELL</span></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#22c98e"></span><span class="mono">US30</span></div></td><td class="mono">$51,462</td><td class="mono dn">-0.17%</td><td class="mono">34k</td><td><span class="badge b-long">↑ Up</span></td><td><span class="badge b-long">BUY</span></td></tr>
               </tbody>
             </table>
           </div>
@@ -1213,8 +1213,8 @@ document.querySelectorAll('.ca-btn').forEach(b => {
 // ═══ Shared in-memory state — single source of truth, synced across pages ═══
 const NOOK = {
   goals: {
-    thisMonth: { label:'เดือนนี้ (Jun 2026)', target:'+8% · $220K',  progress:64, note:'โฟกัส gold swing + คุม drawdown' },
-    nextMonth: { label:'เดือนหน้า (Jul 2026)', target:'+6% · $180K',  progress:0,  note:'รอบ earnings + Fed meeting' },
+    thisMonth: { label:'เดือนนี้ (Jul 2026)', target:'+8% · $220K',  progress:64, note:'โฟกัส gold swing + คุม drawdown' },
+    nextMonth: { label:'เดือนหน้า (Aug 2026)', target:'+6% · $180K',  progress:0,  note:'รอบ earnings + Fed meeting' },
     year2026:  { label:'ทั้งปี 2026',          target:'+75% · $2.4M', progress:38, note:'ทบต้นกำไร · max DD 12%' },
   },
   gold: {
