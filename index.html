@@ -99,6 +99,11 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);height:100vh;o
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.4s ease-in-out infinite}
 .wr-dot{width:5px;height:5px;border-radius:50%;background:var(--text3);display:inline-block;margin-right:3px;animation:blink 1.2s ease-in-out infinite}
 .wr-dot:nth-child(2){animation-delay:.2s}.wr-dot:nth-child(3){animation-delay:.4s}
+.bubble.me{flex-direction:row-reverse}
+.bubble.me .b-body2{background:rgba(74,158,255,.10);border-color:rgba(74,158,255,.25);border-radius:9px 4px 9px 9px}
+.wr-why{margin-top:5px;padding:6px 8px;background:var(--bg4);border-left:2px solid var(--gold);border-radius:4px;font-size:10.5px;color:var(--text3);line-height:1.6}
+.wr-chip{background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:4px 10px;font-size:10.5px;color:var(--text2);cursor:pointer;white-space:nowrap}
+.wr-chip:hover{background:var(--bg4);color:var(--text)}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .tb-select{
   background:var(--bg3);border:1px solid var(--border2);color:var(--text);
@@ -543,7 +548,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);height:100vh;o
           <div style="font-size:26px">⚔️</div>
           <div style="flex:1;min-width:200px">
             <div style="font-size:15px;font-weight:800;letter-spacing:.02em">WAR ROOM — LIVE SESSION</div>
-            <div style="font-size:11px;color:var(--text2);margin-top:2px">ภารกิจ: ตัดสินใจแผนเทรด XAUUSD · ข้อมูล 2 ก.ค. 2026</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px">ภารกิจ: ตัดสินใจแผนเทรด XAUUSD · ข้อมูล 3 ก.ค. 2026</div>
           </div>
           <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--green);font-family:var(--fm)"><span class="live-dot"></span>LIVE</span>
           <span class="badge b-gold">XAUUSD</span>
@@ -560,6 +565,16 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);height:100vh;o
           </div>
           <div class="card-body" id="wrFeed" style="display:flex;flex-direction:column;gap:8px;max-height:420px;overflow-y:auto">
             <div class="bubble" id="wrTyping"><div class="b-avatar" style="background:var(--bg4)">…</div><div class="b-body2" style="max-width:90px"><span class="wr-dot"></span><span class="wr-dot"></span><span class="wr-dot"></span></div></div>
+          </div>
+          <div style="display:flex;gap:6px;padding:8px 12px 0;flex-wrap:wrap">
+            <span class="wr-chip" onclick="wrAsk('RSI 61 แปลว่าอะไร?')">RSI 61 แปลว่าอะไร?</span>
+            <span class="wr-chip" onclick="wrAsk('ทำไมถึงสรุปว่า LONG?')">ทำไมถึง LONG?</span>
+            <span class="wr-chip" onclick="wrAsk('ความเสี่ยงแค่ไหน?')">เสี่ยงแค่ไหน?</span>
+            <span class="wr-chip" onclick="wrAsk('EMA50 คืออะไร?')">EMA50 คืออะไร?</span>
+          </div>
+          <div style="display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border);margin-top:8px">
+            <input id="wrInput" placeholder="ถามทีม AI... เช่น ทำไมถึง LONG ทอง?" style="flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:8px 12px;color:var(--text);font-family:var(--ff);font-size:12px;outline:none" onkeydown="if(event.key==='Enter')wrSend()">
+            <button class="tb-btn accent" onclick="wrSend()">ส่ง ➤</button>
           </div>
         </div>
 
@@ -949,15 +964,15 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);height:100vh;o
         <div style="display:flex;flex-direction:column;gap:12px">
           <!-- Watchlist -->
           <div class="card">
-            <div class="card-head"><span class="card-title">👁 Live Watchlist · ข้อมูล 2 ก.ค. 2026</span></div>
+            <div class="card-head"><span class="card-title">👁 Live Watchlist · ข้อมูล 3 ก.ค. 2026</span></div>
             <table class="tbl">
               <thead><tr><th>Symbol</th><th>Price</th><th>Change</th><th>Volume</th><th>Trend</th><th>Signal</th></tr></thead>
               <tbody>
-                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#f5c842"></span><span class="mono">XAUUSD</span></div></td><td class="mono">$4,100.00</td><td class="mono up">+1.50%</td><td class="mono">142k</td><td><span class="badge b-long">↑ Up</span></td><td><span class="badge b-gold">BUY</span></td></tr>
-                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#4a9eff"></span><span class="mono">EURUSD</span></div></td><td class="mono">$1.1475</td><td class="mono up">+0.15%</td><td class="mono">89k</td><td><span class="badge b-long">↑ Up</span></td><td><span class="badge b-long">BUY</span></td></tr>
-                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#f59e0b"></span><span class="mono">BTCUSD</span></div></td><td class="mono">$61,959</td><td class="mono up">+4.19%</td><td class="mono">$2.1B</td><td><span class="badge b-med">→ Flat</span></td><td><span class="badge b-blue">HOLD</span></td></tr>
-                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#a78bfa"></span><span class="mono">USDJPY</span></div></td><td class="mono">$161.30</td><td class="mono dn">-0.05%</td><td class="mono">67k</td><td><span class="badge b-short">↓ Down</span></td><td><span class="badge b-sell">SELL</span></td></tr>
-                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#22c98e"></span><span class="mono">US30</span></div></td><td class="mono">$51,462</td><td class="mono dn">-0.17%</td><td class="mono">34k</td><td><span class="badge b-long">↑ Up</span></td><td><span class="badge b-long">BUY</span></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#f5c842"></span><span class="mono">XAUUSD</span></div></td><td class="mono">$4,179.65</td><td class="mono up">+1.94%</td><td class="mono">142k</td><td><span class="badge b-long">↑ Up</span></td><td><span class="badge b-gold">BUY</span></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#4a9eff"></span><span class="mono">EURUSD</span></div></td><td class="mono">$1.1604</td><td class="mono up">+0.27%</td><td class="mono">89k</td><td><span class="badge b-long">↑ Up</span></td><td><span class="badge b-long">BUY</span></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#f59e0b"></span><span class="mono">BTCUSD</span></div></td><td class="mono">$61,854</td><td class="mono up">+2.50%</td><td class="mono">$2.1B</td><td><span class="badge b-med">→ Flat</span></td><td><span class="badge b-blue">HOLD</span></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#a78bfa"></span><span class="mono">USDJPY</span></div></td><td class="mono">$161.18</td><td class="mono up">+0.04%</td><td class="mono">67k</td><td><span class="badge b-short">↓ Down</span></td><td><span class="badge b-sell">SELL</span></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:6px"><span class="cdot" style="background:#22c98e"></span><span class="mono">US30</span></div></td><td class="mono">$52,844</td><td class="mono up">+1.03%</td><td class="mono">34k</td><td><span class="badge b-long">↑ Up</span></td><td><span class="badge b-long">BUY</span></td></tr>
               </tbody>
             </table>
           </div>
@@ -1364,13 +1379,51 @@ function runHeadAnalysis(){
 function navTo(p){var el=document.querySelector('.nav-item[data-page="'+p+'"]'); if(el) nav(el);}
 function actionClick(){var t=document.getElementById('actionBtn').textContent; if(t.indexOf('War Room')>-1) navTo('warroom');}
 var wrMsgs=[
- {a:'🐩',n:'Bolt',c:'var(--blue)',bg:'var(--blue2)',t:'H4: ราคายืนเหนือ EMA50 · RSI 61 · โครงสร้าง HH-HL ยังไม่เสีย — <span class="b-hl">momentum กลับมาแล้ว</span>'},
- {a:'🐺',n:'Luna',c:'var(--teal)',bg:'var(--teal2)',t:'ตัวเลขจ้างงานสหรัฐฯ อ่อนแอ → ตลาดลดโอกาส Fed ขึ้นดอกเบี้ย · DXY อ่อนตัว <span class="b-hl">หนุนทอง</span>'},
- {a:'🐕‍🦺',n:'Hana',c:'var(--purple)',bg:'var(--purple2)',t:'ข่าว: เจรจา US–Iran สะดุด → geopolitical premium อาจกลับมาหนุนทองเพิ่ม'},
- {a:'🦮',n:'Rex',c:'var(--red)',bg:'var(--red2)',t:'Volatility สูงขึ้น · จำกัด size ≤ 0.6 lot · <span class="b-hl">risk 1.5% ต่อไม้</span> · ห้ามถัวเฉลี่ยขาลง'},
- {a:'🐈',n:'Coco',c:'var(--green)',bg:'var(--green2)',t:'Spread ปกติ · สภาพคล่องดีสุดช่วง London open · พร้อม execute ทันทีที่อนุมัติ'},
- {a:'🐕',n:'Golden 👑',c:'var(--gold)',bg:'var(--gold2)',t:'<span class="b-hl">มติทีม 5/6: LONG XAUUSD · Entry $4,060–4,080 · SL $3,980 · TP $4,180/$4,250 ✅</span>'}
+ {a:"🐩",n:"Bolt",c:"var(--blue)",bg:"var(--blue2)",t:"H4: ราคายืนเหนือ EMA50 ที่ <span class=\"b-hl\">$4,020/oz</span> · RSI = 61 · โครงสร้าง HH-HL ยังไม่เสีย — momentum กลับมาแล้ว<div class=\"wr-why\">💡 หลักคิด: EMA50 คือเส้นค่าเฉลี่ยราคา 50 แท่งล่าสุด ใช้เป็นเส้นแบ่งแนวโน้ม — ราคายืนเหนือได้ = ฝั่งซื้อยังคุมเกม · RSI วัดโมเมนตัม 0–100: เกิน 70 = Overbought (ซื้อมากเกิน เสี่ยงย่อ), ต่ำกว่า 30 = Oversold (ขายมากเกิน เสี่ยงเด้ง) — ค่า 61 คือโมเมนตัมฝั่งบวกที่ยังไม่ตึง จึงเป็นขาขึ้นที่ยังมีแรงวิ่งต่อ</div>"},
+ {a:"🐺",n:"Luna",c:"var(--teal)",bg:"var(--teal2)",t:"ตัวเลขจ้างงานสหรัฐฯ อ่อนแอ → ตลาดลดโอกาส Fed ขึ้นดอกเบี้ย · DXY อ่อนตัว <span class=\"b-hl\">หนุนทอง</span><div class=\"wr-why\">💡 หลักคิด: ทองไม่มีดอกเบี้ย — ยิ่งดอกเบี้ยสูง เงินยิ่งไหลไปพันธบัตร ทองจะน่าถือเมื่อดอกเบี้ยมีแนวโน้มลงหรือไม่ขึ้น · และทองตั้งราคาเป็น USD ดอลลาร์อ่อน = ทองถูกลงสำหรับผู้ถือเงินสกุลอื่น แรงซื้อทั่วโลกจึงเพิ่ม</div>"},
+ {a:"🐕‍🦺",n:"Hana",c:"var(--purple)",bg:"var(--purple2)",t:"ข่าว: เจรจา US–Iran สะดุด → geopolitical premium อาจกลับมาหนุนทองเพิ่ม<div class=\"wr-why\">💡 หลักคิด: ทองเป็น Safe Haven — เมื่อความไม่แน่นอนทางภูมิรัฐศาสตร์สูงขึ้น นักลงทุนย้ายเงินจากสินทรัพย์เสี่ยงมาพักในทอง ราคาจึงมี \"premium ความกลัว\" บวกเพิ่มจากปัจจัยพื้นฐาน</div>"},
+ {a:"🦮",n:"Rex",c:"var(--red)",bg:"var(--red2)",t:"Volatility สูงขึ้น · จำกัด size ≤ 0.6 lot · <span class=\"b-hl\">risk 1.5% ต่อไม้</span> · ห้ามถัวเฉลี่ยขาลง<div class=\"wr-why\">💡 หลักคิด: ช่วงผันผวนสูงราคาแกว่งแรง โอกาสโดน SL จาก noise สูงขึ้น — ลด size เพื่อให้แม้โดน SL ก็เสียเงินเท่าแผนเดิม · risk 1.5%/ไม้ = แพ้ติดกัน 5 ไม้เสียแค่ ~7.5% ของพอร์ต ยังกู้คืนไหว</div>"},
+ {a:"🐈",n:"Coco",c:"var(--green)",bg:"var(--green2)",t:"Spread ปกติ · สภาพคล่องดีสุดช่วง London open · พร้อม execute ทันทีที่อนุมัติ<div class=\"wr-why\">💡 หลักคิด: ช่วงตลาดลอนดอนเปิด (~14:00–15:00 น. ไทย) ปริมาณซื้อขายทองสูงสุด spread แคบ slippage ต่ำ — เข้าออเดอร์ช่วงนี้ต้นทุนถูกกว่าช่วงตลาดเบาบาง</div>"},
+ {a:"🐕",n:"Golden 👑",c:"var(--gold)",bg:"var(--gold2)",t:"<span class=\"b-hl\">มติทีม 5/6: LONG XAUUSD · Entry $4,060–4,080 · SL $3,980 · TP $4,180/$4,250 ✅</span><div class=\"wr-why\">💡 หลักคิด: Technical (Bolt) + Macro (Luna) + News (Hana) ชี้ทางเดียวกัน = confluence สูง โอกาสถูกมากกว่าสัญญาณเดี่ยว · รับเงื่อนไข Rex ลด size เพราะ vol สูง · รอย่อเข้า entry zone แทนไล่ราคา เพื่อ R:R ดีกว่าและระยะ SL สั้นลง</div>"}
 ];
+
+// ═══ WAR ROOM CHAT ═══
+function wrWhy(t){return '<div class="wr-why">💡 หลักคิด: '+t+'</div>';}
+function wrBubble(msg,me){
+ var feed=document.getElementById('wrFeed');
+ var d=document.createElement('div'); d.className='bubble'+(me?' me':'');
+ d.innerHTML= me
+  ? '<div class="b-avatar" style="background:var(--blue2)">👤</div><div class="b-body2"><div class="b-name2" style="color:var(--blue)">คุณ</div>'+msg+'</div>'
+  : '<div class="b-avatar" style="background:'+msg.bg+'">'+msg.a+'</div><div class="b-body2"><div class="b-name2" style="color:'+msg.c+'">'+msg.n+'</div>'+msg.t+'</div>';
+ feed.insertBefore(d, document.getElementById('wrTyping'));
+ feed.scrollTop=feed.scrollHeight;
+}
+function wrAgentReply(q){
+ q=q.toLowerCase();
+ var B={a:'🐩',n:'Bolt',c:'var(--blue)',bg:'var(--blue2)'};
+ var L={a:'🐺',n:'Luna',c:'var(--teal)',bg:'var(--teal2)'};
+ var X={a:'🦮',n:'Rex',c:'var(--red)',bg:'var(--red2)'};
+ var G={a:'🐕',n:'Golden 👑',c:'var(--gold)',bg:'var(--gold2)'};
+ var r=function(ag,t){var o={a:ag.a,n:ag.n,c:ag.c,bg:ag.bg};o.t=t;return o;};
+ if(/rsi/.test(q)) return r(B,'RSI (Relative Strength Index) วัดโมเมนตัม 0–100 — ตอนนี้ XAUUSD H4 อยู่ที่ <span class="b-hl">61</span>'+wrWhy('เกิน 70 = Overbought (แรงซื้อตึงเกิน เสี่ยงพักตัว/ย่อ) · ต่ำกว่า 30 = Oversold (แรงขายตึงเกิน เสี่ยงเด้งกลับ) · โซน 50–70 = โมเมนตัมขาขึ้นแข็งแรง — 61 จึงหมายถึงฝั่งซื้อได้เปรียบ และยังมีที่ให้วิ่งก่อนถึงเขต overbought'));
+ if(/ema|ค่าเฉลี่ย|moving/.test(q)) return r(B,'EMA50 คือเส้นค่าเฉลี่ยราคาถ่วงน้ำหนัก 50 แท่งล่าสุด — ตอนนี้อยู่ที่ <span class="b-hl">$4,020/oz</span> และราคายืนเหนือเส้นนี้ได้'+wrWhy('EMA ให้น้ำหนักแท่งล่าสุดมากกว่า จึงตอบสนองไวกว่า SMA · ใช้เป็นเส้นแบ่งแนวโน้ม — ราคาเหนือเส้น = ขาขึ้น ใต้เส้น = ขาลง และมักทำหน้าที่เป็นแนวรับ/แนวต้านเคลื่อนที่ด้วย'));
+ if(/เสี่ยง|risk|ขาดทุน|size|lot|sl|stop/.test(q)) return r(X,'ความเสี่ยงต่อไม้จำกัดที่ <span class="b-hl">1.5% ของพอร์ต</span> · size ≤ 0.6 lot · SL $3,980 · หลุด SL = หยุดเทรดทั้งวัน'+wrWhy('กำหนดเงินที่ยอมเสียก่อน แล้วคำนวณ size ย้อนกลับจากระยะ SL — ไม่ใช่กำหนด size ตามความมั่นใจ · วิธีนี้แพ้ติดกันหลายไม้ก็ไม่เจ็บหนัก และตัดอารมณ์ออกจากการตัดสินใจ'));
+ if(/ข่าว|news|iran|fed|เฟด|ดอกเบี้ย|เงินเฟ้อ/.test(q)) return r(L,'ปัจจัยหลักตอนนี้: จ้างงานสหรัฐฯ อ่อนแอ → ตลาดลดโอกาส Fed ขึ้นดอกเบี้ย · เจรจา US–Iran สะดุด · เงินเฟ้อสหรัฐฯ ยังสูง 4.2%'+wrWhy('ทองตอบสนองต่อดอกเบี้ยแท้จริง (ดอกเบี้ย − เงินเฟ้อ) — ดอกเบี้ยไม่ขึ้นแต่เงินเฟ้อสูง = ดอกเบี้ยแท้จริงลด = บวกกับทอง · ข่าวภูมิรัฐศาสตร์เพิ่มแรงซื้อ safe haven ระยะสั้น'));
+ if(/btc|bitcoin|บิท|eth|คริปโต|crypto/.test(q)) return r(B,'BTC $61,959 (+4.19%) · ETH $1,713 (+7.08%) — เด้งแรงหลังตลาดฟื้นจากขาลงปลาย มิ.ย.'+wrWhy('การเด้งพร้อมกันทั้งตลาดหลังลงลึกมักเป็น relief rally — ต้องรอดูว่ายืนเหนือแนวต้านสำคัญได้ไหมก่อนยืนยันการกลับตัวจริง ระวัง dead cat bounce'));
+ if(/ทำไม|long|ลอง|ซื้อ|buy|เหตุผล|สรุป|มติ/.test(q)) return r(G,'มติ LONG มาจาก 3 มุมที่ชี้ทางเดียวกัน: Technical (ยืนเหนือ EMA50 $4,020 + RSI 61) · Macro (Fed ไม่น่าขึ้นดอกเบี้ย → DXY อ่อน) · News (US–Iran สะดุด → แรงซื้อ safe haven)'+wrWhy('เราไม่เข้าเทรดจากสัญญาณเดี่ยว — ต้องมี confluence อย่างน้อย 2 ใน 3 มุม ครั้งนี้ได้ครบ 3 · แต่ vol สูงจึงลด size ตาม Rex และรอย่อเข้า $4,060–4,080 แทนไล่ราคา เพื่อ R:R 1:2.4'));
+ if(/ทอง|gold|xau|ราคา/.test(q)) return r(G,'ทองตอนนี้ ~$4,100/oz เด้งจากจุดต่ำสุด 8 เดือน · ทองไทยรูปพรรณ ฿65,000 · แผนทีม: LONG โซน $4,060–4,080'+wrWhy('จุดต่ำสุด 8 เดือน + ข่าวหนุน = โซนที่แรงขายเริ่มหมด · แต่เด้งแรงวันเดียวยังไม่ยืนยันแนวโน้ม จึงตั้ง entry แบบรอย่อ ไม่ไล่ราคา'));
+ return r(G,'ถามเจาะได้เลยครับ เช่น "RSI คืออะไร" · "ทำไมถึง LONG" · "เสี่ยงแค่ไหน" · "ข่าววันนี้มีอะไร" · ราคาทอง/BTC'+wrWhy('ทีมแบ่งหน้าที่: Bolt = เทคนิค · Luna = macro · Hana = ข่าว · Rex = ความเสี่ยง · Coco = execution · ผมสรุปมติ — ถามให้ตรงคนจะได้คำตอบลึกสุด'));
+}
+function wrAsk(t){var inp=document.getElementById('wrInput');inp.value=t;wrSend();}
+function wrSend(){
+ var inp=document.getElementById('wrInput'); var q=(inp.value||'').trim(); if(!q) return;
+ inp.value='';
+ wrBubble(q,true);
+ var ty=document.getElementById('wrTyping'); ty.style.display='';
+ var feed=document.getElementById('wrFeed'); feed.scrollTop=feed.scrollHeight;
+ setTimeout(function(){ ty.style.display='none'; wrBubble(wrAgentReply(q),false); },1100+Math.random()*800);
+}
+
 var wrStarted=false,wrSec=0;
 function wrStart(){ if(wrStarted) return; wrStarted=true;
  setInterval(function(){wrSec++;var m=('0'+Math.floor(wrSec/60)).slice(-2),x=('0'+wrSec%60).slice(-2);var c=document.getElementById('wrClock');if(c)c.textContent=m+':'+x;},1000);
