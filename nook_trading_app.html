@@ -548,7 +548,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);height:100vh;o
           <div style="font-size:26px">⚔️</div>
           <div style="flex:1;min-width:200px">
             <div style="font-size:15px;font-weight:800;letter-spacing:.02em">WAR ROOM — LIVE SESSION</div>
-            <div style="font-size:11px;color:var(--text2);margin-top:2px">ภารกิจ: ตัดสินใจแผนเทรด XAUUSD · ข้อมูล 6 ก.ค. 2026</div>
+            <div style="font-size:11px;color:var(--text2);margin-top:2px">ภารกิจ: ตัดสินใจแผนเทรด XAUUSD · เปิดห้อง <span id="wrOpenAt">—</span></div>
           </div>
           <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--green);font-family:var(--fm)"><span class="live-dot"></span>LIVE</span>
           <span class="badge b-gold">XAUUSD</span>
@@ -1389,12 +1389,17 @@ var wrMsgs=[
 
 // ═══ WAR ROOM CHAT ═══
 function wrWhy(t){return '<div class="wr-why">💡 หลักคิด: '+t+'</div>';}
+function wrNow(){
+ var d=new Date();
+ return d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'})+' · '+d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+' น.';
+}
+function wrStamp(){return '<span style="font-weight:400;color:var(--text3);font-size:9px;margin-left:8px;font-family:var(--fm)">'+wrNow()+'</span>';}
 function wrBubble(msg,me){
  var feed=document.getElementById('wrFeed');
  var d=document.createElement('div'); d.className='bubble'+(me?' me':'');
  d.innerHTML= me
-  ? '<div class="b-avatar" style="background:var(--blue2)">👤</div><div class="b-body2"><div class="b-name2" style="color:var(--blue)">คุณ</div>'+msg+'</div>'
-  : '<div class="b-avatar" style="background:'+msg.bg+'">'+msg.a+'</div><div class="b-body2"><div class="b-name2" style="color:'+msg.c+'">'+msg.n+'</div>'+msg.t+'</div>';
+  ? '<div class="b-avatar" style="background:var(--blue2)">👤</div><div class="b-body2"><div class="b-name2" style="color:var(--blue)">คุณ'+wrStamp()+'</div>'+msg+'</div>'
+  : '<div class="b-avatar" style="background:'+msg.bg+'">'+msg.a+'</div><div class="b-body2"><div class="b-name2" style="color:'+msg.c+'">'+msg.n+wrStamp()+'</div>'+msg.t+'</div>';
  feed.insertBefore(d, document.getElementById('wrTyping'));
  feed.scrollTop=feed.scrollHeight;
 }
@@ -1426,15 +1431,12 @@ function wrSend(){
 
 var wrStarted=false,wrSec=0;
 function wrStart(){ if(wrStarted) return; wrStarted=true;
+ var oa=document.getElementById('wrOpenAt'); if(oa) oa.textContent=wrNow();
  setInterval(function(){wrSec++;var m=('0'+Math.floor(wrSec/60)).slice(-2),x=('0'+wrSec%60).slice(-2);var c=document.getElementById('wrClock');if(c)c.textContent=m+':'+x;},1000);
  var i=0, feed=document.getElementById('wrFeed');
  function push(){
   if(i>=wrMsgs.length){var ty=document.getElementById('wrTyping'); if(ty) ty.style.display='none'; return;}
-  var msg=wrMsgs[i++];
-  var d=document.createElement('div'); d.className='bubble';
-  d.innerHTML='<div class="b-avatar" style="background:'+msg.bg+'">'+msg.a+'</div><div class="b-body2"><div class="b-name2" style="color:'+msg.c+'">'+msg.n+'</div>'+msg.t+'</div>';
-  feed.insertBefore(d, document.getElementById('wrTyping'));
-  feed.scrollTop=feed.scrollHeight;
+  wrBubble(wrMsgs[i++],false);
   setTimeout(push, 2000+Math.random()*1500);
  }
  setTimeout(push,800);
