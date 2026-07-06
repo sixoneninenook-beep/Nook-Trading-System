@@ -553,6 +553,7 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);height:100vh;o
           <span class="badge b-gold">XAUUSD</span>
           <span class="badge b-long">Session #14</span>
           <span class="mono" id="wrClock" style="font-family:var(--fm);font-size:12px;color:var(--text2)">00:00</span>
+          <span class="wr-chip" onclick="if(confirm('ล้างประวัติสนทนา War Room?'))wrClear()" title="เริ่ม session ใหม่">🗑 ล้างประวัติ</span>
         </div>
       </div>
 
@@ -1373,13 +1374,19 @@ function wrNow(){
  var d=new Date();
  return d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'})+' · '+d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+' น.';
 }
-function wrStamp(){return '<span style="font-weight:400;color:var(--text3);font-size:9px;margin-left:8px;font-family:var(--fm)">'+wrNow()+'</span>';}
-function wrBubble(msg,me){
+function wrStamp(ts){return '<span style="font-weight:400;color:var(--text3);font-size:9px;margin-left:8px;font-family:var(--fm)">'+(ts||wrNow())+'</span>';}
+// ═══ persistent history — เวลาบันทึกครั้งแรก ไม่เปลี่ยนเมื่อเปิดใหม่ ═══
+function wrLoad(){ try{return JSON.parse(localStorage.getItem('nookWarRoom')||'null');}catch(e){return null;} }
+function wrSave(h){ try{localStorage.setItem('nookWarRoom',JSON.stringify(h));}catch(e){} }
+var wrHist=wrLoad()||{opened:null,msgs:[]};
+function wrRecord(entry){ wrHist.msgs.push(entry); wrSave(wrHist); }
+function wrClear(){ try{localStorage.removeItem('nookWarRoom');}catch(e){} location.reload(); }
+function wrBubble(msg,me,ts){
  var feed=document.getElementById('wrFeed');
  var d=document.createElement('div'); d.className='bubble'+(me?' me':'');
  d.innerHTML= me
-  ? '<div class="b-avatar" style="background:var(--blue2)">👤</div><div class="b-body2"><div class="b-name2" style="color:var(--blue)">คุณ'+wrStamp()+'</div>'+msg+'</div>'
-  : '<div class="b-avatar" style="background:'+msg.bg+'">'+msg.a+'</div><div class="b-body2"><div class="b-name2" style="color:'+msg.c+'">'+msg.n+wrStamp()+'</div>'+msg.t+'</div>';
+  ? '<div class="b-avatar" style="background:var(--blue2)">👤</div><div class="b-body2"><div class="b-name2" style="color:var(--blue)">คุณ'+wrStamp(ts)+'</div>'+msg+'</div>'
+  : '<div class="b-avatar" style="background:'+msg.bg+'">'+msg.a+'</div><div class="b-body2"><div class="b-name2" style="color:'+msg.c+'">'+msg.n+wrStamp(ts)+'</div>'+msg.t+'</div>';
  feed.insertBefore(d, document.getElementById('wrTyping'));
  feed.scrollTop=feed.scrollHeight;
 }
@@ -1403,20 +1410,35 @@ function wrAsk(t){var inp=document.getElementById('wrInput');inp.value=t;wrSend(
 function wrSend(){
  var inp=document.getElementById('wrInput'); var q=(inp.value||'').trim(); if(!q) return;
  inp.value='';
- wrBubble(q,true);
+ var ts=wrNow();
+ wrBubble(q,true,ts);
+ wrRecord({me:true,text:q,ts:ts});
  var ty=document.getElementById('wrTyping'); ty.style.display='';
  var feed=document.getElementById('wrFeed'); feed.scrollTop=feed.scrollHeight;
- setTimeout(function(){ ty.style.display='none'; wrBubble(wrAgentReply(q),false); },1100+Math.random()*800);
+ setTimeout(function(){
+  ty.style.display='none';
+  var rep=wrAgentReply(q), rts=wrNow();
+  wrBubble(rep,false,rts);
+  wrRecord({me:false,msg:rep,ts:rts});
+ },1100+Math.random()*800);
 }
 
 var wrStarted=false,wrSec=0;
 function wrStart(){ if(wrStarted) return; wrStarted=true;
- var oa=document.getElementById('wrOpenAt'); if(oa) oa.textContent=wrNow();
+ if(!wrHist.opened){ wrHist.opened=wrNow(); wrSave(wrHist); }
+ var oa=document.getElementById('wrOpenAt'); if(oa) oa.textContent=wrHist.opened;
  setInterval(function(){wrSec++;var m=('0'+Math.floor(wrSec/60)).slice(-2),x=('0'+wrSec%60).slice(-2);var c=document.getElementById('wrClock');if(c)c.textContent=m+':'+x;},1000);
- var i=0, feed=document.getElementById('wrFeed');
+ if(wrHist.msgs.length){
+  wrHist.msgs.forEach(function(e){ wrBubble(e.me?e.text:e.msg, e.me, e.ts); });
+  var ty0=document.getElementById('wrTyping'); if(ty0) ty0.style.display='none';
+  return;
+ }
+ var i=0;
  function push(){
   if(i>=wrMsgs.length){var ty=document.getElementById('wrTyping'); if(ty) ty.style.display='none'; return;}
-  wrBubble(wrMsgs[i++],false);
+  var m=wrMsgs[i++], ts=wrNow();
+  wrBubble(m,false,ts);
+  wrRecord({me:false,msg:m,ts:ts});
   setTimeout(push, 2000+Math.random()*1500);
  }
  setTimeout(push,800);
