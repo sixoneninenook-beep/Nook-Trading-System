@@ -480,14 +480,13 @@ body{font-family:var(--ff);background:var(--bg);color:var(--text);height:100vh;o
         <!-- Discussion -->
         <div class="card">
           <div class="card-head">
-            <span class="card-title">💬 AI Team Discussion</span>
-            <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--green);font-family:var(--fm)"><span class="live-dot"></span>Live</span>
+            <span class="card-title">💬 AI Team Discussion <span style="font-weight:400;color:var(--text3);font-size:10px">· preview จาก War Room</span></span>
+            <span style="display:flex;align-items:center;gap:8px">
+              <span style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--green);font-family:var(--fm)"><span class="live-dot"></span>Live</span>
+              <span class="wr-chip" onclick="navTo('warroom')" style="color:var(--blue)">เปิด War Room ⚔️</span>
+            </span>
           </div>
-          <div class="card-body" style="display:flex;flex-direction:column;gap:8px;max-height:240px;overflow-y:auto">
-            <div class="bubble"><div class="b-avatar" style="background:var(--blue2)">🐩</div><div class="b-body2"><div class="b-name2" style="color:var(--blue)">Bolt</div>XAUUSD ยืนเหนือ $4,050 อีกครั้ง. RSI 58.4, MACD เริ่มกลับตัว — <span class="b-hl">momentum strong</span>.</div></div>
-            <div class="bubble"><div class="b-avatar" style="background:var(--teal2)">🐺</div><div class="b-body2"><div class="b-name2" style="color:var(--teal)">Luna</div>Fed rate cut odds ขึ้น 65%. DXY อ่อนค่า <span class="b-hl">tailwind สำหรับ gold</span>.</div></div>
-            <div class="bubble"><div class="b-avatar" style="background:var(--red2)">🦮</div><div class="b-body2"><div class="b-name2" style="color:var(--red)">Rex</div>Drawdown 3.2% ใน safe zone. <span class="b-hl">Position size ≤ 0.6 lot</span> แนะนำ (vol สูง).</div></div>
-            <div class="bubble"><div class="b-avatar" style="background:var(--gold2)">🐕</div><div class="b-body2"><div class="b-name2" style="color:var(--gold)">Golden 👑</div><span class="b-hl">Team consensus: LONG XAUUSD @ $4,065 · TP $4,250 · SL $3,980 · Approved ✅</span></div></div>
+          <div class="card-body" id="teamPreview" style="display:flex;flex-direction:column;gap:8px;max-height:240px;overflow-y:auto">
           </div>
         </div>
         <!-- Team Summary -->
@@ -1442,7 +1441,21 @@ function wrStart(){ if(wrStarted) return; wrStarted=true;
  setTimeout(push,800);
 }
 
-function syncAll(){ renderGoals(); renderGold(); runHeadAnalysis(); }
+
+// ═══ Command Center preview: mirror War Room discussion ═══
+function renderTeamPreview(){
+ var el=document.getElementById('teamPreview'); if(!el) return;
+ var html=wrMsgs.map(function(m){
+  var t=m.t.replace(/<div class="wr-why">[\s\S]*?<\/div>/g,'');
+  var plain=t.replace(/<[^>]+>/g,'');
+  if(plain.length>110){t=plain.slice(0,110)+'…';}
+  return '<div class="bubble"><div class="b-avatar" style="background:'+m.bg+'">'+m.a+'</div><div class="b-body2"><div class="b-name2" style="color:'+m.c+'">'+m.n+'</div>'+t+'</div></div>';
+ }).join('');
+ html+='<div style="text-align:center;padding:4px 0"><span class="wr-chip" onclick="navTo(\'warroom\')" style="color:var(--blue)">ดูบทสนทนาเต็ม + หลักคิด ใน War Room →</span></div>';
+ el.innerHTML=html;
+}
+
+function syncAll(){ renderGoals(); renderGold(); runHeadAnalysis(); renderTeamPreview(); }
 syncAll();
 </script>
 </body>
