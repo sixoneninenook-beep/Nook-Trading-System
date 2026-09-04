@@ -1224,10 +1224,10 @@ function renderMkt(){
   const rows=[['BTCUSD','btc'],['ETHUSD','eth'],['XAGUSD','silver'],['EURUSD','eurusd'],
               ['USDJPY','usdjpy'],['USD/THB','usdthb'],['SET','set'],['SET50','set50']];
   w.innerHTML=rows.map(r=>{
-    const m=MKT[r[1]];
+    const m=MKT[r[1]], dead=m.src==='seed'||m.src==='ไม่มีข้อมูล';
     return '<div class="stat" style="text-align:left"><div class="stat-l" style="margin:0 0 4px">'+r[0]+'</div>'+
-      '<div class="stat-v" style="font-size:20px">'+(m.px?nf(m.px,m.d):'—')+'</div>'+
-      '<div class="stat-l '+sgn(m.chg)+'">'+(m.chg?pct(m.chg):esc(m.src))+'</div></div>';
+      '<div class="stat-v" style="font-size:20px'+(dead?';opacity:.35':'')+'">'+(dead?'—':nf(m.px,m.d))+'</div>'+
+      '<div class="stat-l '+(dead?'a':sgn(m.chg))+'">'+(dead?'ดึงไม่ได้':(m.chg?pct(m.chg):esc(m.src)))+'</div></div>';
   }).join('');
 }
 
@@ -1268,31 +1268,31 @@ function agentList(){
       : 'ทั้งทีมชี้ทางเดียวกัน (confluence) — โอกาสถูกสูงกว่าสัญญาณเดี่ยว แต่ก็แปลว่าถ้าผิดจะผิดพร้อมกันทั้งทีม จึงยังต้องมี SL เสมอ';
 
   return [
-   {a:'🐩',n:'Bolt',r:'เทคนิค',c:'--blue',s:tech,
+   {a:'🐩',n:'Bolt',k:'B',r:'เทคนิค',c:'--blue',s:tech,
     t:'ราคา <b>$'+nf(p.px)+'</b> · EMA20 <b>'+nf(i.ema20)+'</b> '+(rising?'ชี้ขึ้น':'ชี้ลง')+
       ' · EMA50 <b>'+nf(i.ema50)+'</b> → <b>'+stack+'</b>'+
       ' · RSI <b>'+nf(i.rsi,1)+'</b> · ATR H1 <b>$'+nf(i.atr)+'</b> ('+nf(atrPct,2)+'% ของราคา)',
     w:boltW},
 
-   {a:'🐺',n:'Luna',r:'มหภาค',c:'--teal',s:MACRO.score, t:esc(MACRO.head), w:MACRO.why},
+   {a:'🐺',n:'Luna',k:'L',r:'มหภาค',c:'--teal',s:MACRO.score, t:esc(MACRO.head), w:MACRO.why},
 
-   {a:'🐕‍🦺',n:'Hana',r:'ข่าว/ประตูเข้าออก',c:'--purple',s:sig.hana.s,
+   {a:'🐕‍🦺',n:'Hana',k:'H',r:'ข่าว/ประตูเข้าออก',c:'--purple',s:sig.hana.s,
     t:sig.hana.gate.block?'<b class="r">'+esc(sig.hana.d)+'</b> — ห้ามเปิดไม้ใหม่ตอนนี้':'ประตูเปิด · '+esc(sig.hana.d),
     w:sig.hana.w},
 
-   {a:'🦮',n:'Rex',r:'ความเสี่ยง',c:'--red',s:sig.rex.s,
+   {a:'🦮',n:'Rex',k:'R',r:'ความเสี่ยง',c:'--red',s:sig.rex.s,
     t:(p.side==='WAIT'
         ?'ยังไม่มีไม้ให้คุม — เงินสดคือสถานะที่ปลอดภัยที่สุดตอนสัญญาณไม่ชัด'
         :'อนุมัติ <b>'+p.lot+' lot</b> · เสี่ยงสูงสุด <b class="r">$'+nf(p.riskUsd,0)+'</b> ('+CFG.risk+'% ของพอร์ต)')+
       ' · '+(sig.rex.parts.length?'<b class="a">'+esc(sig.rex.d)+'</b>':esc(sig.rex.d)),
     w:sig.rex.w},
 
-   {a:'🐈',n:'Coco',r:'ลงมือ',c:'--green',s:sig.coco.s,
+   {a:'🐈',n:'Coco',k:'C',r:'ลงมือ',c:'--green',s:sig.coco.s,
     t:'ช่วงตลาด <b>'+esc(sig.coco.sess.n)+'</b> — '+esc(sig.coco.sess.d)+
       (p.side!=='WAIT'?' · '+(p.inZone?'<b class="g">ราคาอยู่ในโซนแล้ว เข้าได้เลย</b>':'ตั้ง limit '+(p.side==='LONG'?'buy':'sell')+' ที่ <b>'+nf(p.entryRef)+'</b> พร้อม SL '+nf(p.sl)):''),
     w:sig.coco.w},
 
-   {a:'🐕',n:'Golden 👑',r:'สรุปมติ',c:'--gold',s:p.score,
+   {a:'🐕',n:'Golden 👑',k:'G',r:'สรุปมติ',c:'--gold',s:p.score,
     t:conflict+'<br>'+(p.side==='WAIT'
       ?'มติ: <b class="a">ยังไม่เข้า</b> · คะแนนรวม '+(p.score>0?'+':'')+p.score+' ไม่ถึงเกณฑ์ ±1.8 · ปลดล็อกเมื่อยืนเหนือ '+nf(p.upTrig)+' หรือหลุด '+nf(p.dnTrig)
       :'มติ: <b>'+p.side+' '+p.lot+' lot</b> · เข้า <b>'+nf(p.entryRef)+'</b> · SL <b class="r">'+nf(p.sl)+'</b> · TP1 <b class="g">'+nf(p.tp1)+'</b> · TP2 <b class="g">'+nf(p.tp2)+'</b> · มั่นใจ '+p.conf+'%'),
@@ -1311,7 +1311,8 @@ function renderWar(){
     return '<div class="agent"><div class="av" style="background:var('+a.c+'2)">'+a.a+'</div><div style="min-width:0;flex:1">'+
       '<div class="agent-n"><span style="color:var('+a.c+')">'+a.n+'</span>'+
         '<span class="agent-r">'+a.r+'</span><span class="badge '+v[0]+'">'+v[1]+'</span>'+
-        (a.s?'<span class="mono muted">'+(a.s>0?'+':'')+nf(a.s)+'</span>':'')+'</div>'+
+        (a.s?'<span class="mono muted">'+(a.s>0?'+':'')+nf(a.s)+'</span>':'')+
+        '<button class="btn sm" style="margin-left:auto;padding:4px 11px;font-size:11px" onclick="talkTo(\''+a.k+'\')">💬 คุยกับ '+a.n.replace(' 👑','')+'</button></div>'+
       '<div class="agent-t">'+a.t+'</div>'+
       '<div class="why">💡 '+a.w+'</div>'+
     '</div></div>';
@@ -1500,9 +1501,9 @@ function renderMarket(){
     GROUPS.map(gr=>
       '<tr><td colspan="4" style="background:var(--bg3);font-size:12px;letter-spacing:.06em;color:var(--text3)"><b>'+esc(gr.t)+'</b></td></tr>'+
       gr.rows.map(r=>{ const m=MKT[r[1]]; const stale=m.src==='seed'||m.src==='ไม่มีข้อมูล';
-        return '<tr><td><b>'+esc(r[0])+'</b></td><td>'+(m.px?nf(m.px,m.d):'—')+'</td>'+
-        '<td class="'+sgn(m.chg)+'">'+(m.chg?pct(m.chg):'—')+'</td>'+
-        '<td class="'+(stale?'a':'muted')+'">'+esc(stale?'ค่าตั้งต้น (ดึงไม่ได้)':m.src)+'</td></tr>'; }).join('')
+        return '<tr><td><b>'+esc(r[0])+'</b></td><td'+(stale?' style="opacity:.35"':'')+'>'+(stale?'—':nf(m.px,m.d))+'</td>'+
+        '<td class="'+sgn(m.chg)+'">'+(!stale&&m.chg?pct(m.chg):'—')+'</td>'+
+        '<td class="'+(stale?'a':'muted')+'">'+esc(stale?'ดึงไม่ได้':m.src)+'</td></tr>'; }).join('')
     ).join('')+'</tbody></table>'+
     '<div class="why" style="margin-top:12px">💡 คู่เงินทุกคู่คำนวณจากอัตราอ้างอิง ECB ชุดเดียวกัน ซึ่ง<b>อัปเดตวันละครั้ง</b> — ใช้ดูทิศทางกว้างๆ ได้ แต่ห้ามใช้เป็นราคาเข้าออเดอร์ · ดัชนี SET เป็นราคาปิดสิ้นวัน ไม่ใช่ราคาสดระหว่างวัน · เฉพาะทอง คริปโต และเงิน (XAG) เท่านั้นที่เป็นราคาสด</div>';
 
@@ -1604,13 +1605,142 @@ function chatAsk(t){ el('chatIn').value=t; chatSend(); }
 function chatSend(){
   const inp=el('chatIn'); const q=(inp.value||'').trim(); if(!q) return;
   inp.value=''; chatPush({me:true,t:q});
-  setTimeout(()=>{ const r=answer(q); chatPush(r); },260);
+  setTimeout(()=>{
+    const lc=q.toLowerCase();
+    if(/อัปเดต|อัพเดต|refresh|รีเฟรช|ดึงราคา/.test(lc)){ DATA.refresh(true); chatPush(A(AG.C,'กำลังดึงราคาสดรอบใหม่ · เสร็จแล้วทุกหน้าจะคำนวณใหม่พร้อมกัน')); return; }
+    if(FOCUS.k&&/ทั้งทีม|ทุกคน|กลับ/.test(lc)){ talkTeam(); return; }
+    chatPush(FOCUS.k?answerAs(FOCUS.k,lc):answer(q));
+  },260);
 }
 function renderChips(){
-  const c=['ราคาตอนนี้','เข้าตรงไหน','SL กับ TP เท่าไหร่','ทำไมถึงคิดแบบนี้','สถิติแม่นแค่ไหน','ข่าวที่ต้องระวัง','คู่เงินวันนี้','เงินบาทเป็นไง','หุ้นไทย SET','คริปโตวันนี้','อัปเดตราคาเดี๋ยวนี้'];
-  el('chips').innerHTML=c.map(x=>'<button class="chip" onclick="chatAsk(\''+x+'\')">'+x+'</button>').join('');
+  const c=FOCUS.k?AGENT_CHIPS[FOCUS.k]
+    :['ราคาตอนนี้','เข้าตรงไหน','SL กับ TP เท่าไหร่','ทำไมถึงคิดแบบนี้','สถิติแม่นแค่ไหน','ข่าวที่ต้องระวัง','คู่เงินวันนี้','เงินบาทเป็นไง','หุ้นไทย SET','คริปโตวันนี้','อัปเดตราคาเดี๋ยวนี้'];
+  el('chips').innerHTML=
+    (FOCUS.k?'<button class="chip" style="border-color:var(--gold);color:var(--gold)" onclick="talkTeam()">← คุยกับทั้งทีม</button>':'')+
+    c.map(x=>'<button class="chip" onclick="chatAsk(\''+x+'\')">'+x+'</button>').join('');
 }
 function A(ag,t){ return {me:false,a:ag.a,n:ag.n,c:ag.c,t:t}; }
+
+/* === คุยรายตัว: แต่ละ agent ตอบจากมุมของตัวเองเท่านั้น ===
+   ถ้าถามนอกความรับผิดชอบ เขาบอกตรงๆ ว่าไม่ใช่เรื่องของเขา แล้วชี้ไปหาคนที่ถูก */
+const FOCUS={k:null};
+const AGENT_ROLE={B:'ดูกราฟและอินดิเคเตอร์',L:'ดูภาพใหญ่เศรษฐกิจ',H:'ดูข่าวและจังหวะห้ามเทรด',
+  R:'ดูความเสี่ยงและขนาดไม้',C:'ดูการเข้าออเดอร์จริง',G:'สรุปมติของทีม'};
+const AGENT_TOPIC={B:'กราฟ RSI EMA ATR',L:'เฟด เงินเฟ้อ ค่าเงิน',H:'ข่าวและเวลาห้ามเข้า',
+  R:'ความเสี่ยง ขนาดไม้ สถิติ',C:'จุดเข้า สภาพคล่อง',G:'มติรวมและเหตุผล'};
+const AGENT_CHIPS={
+  B:['RSI ตอนนี้เท่าไหร่','เทรนด์เป็นยังไง','ATR บอกอะไร','กรอบวันนี้'],
+  L:['เฟดจะขึ้นดอกเบี้ยไหม','คู่เงินวันนี้','เงินบาทเป็นไง','หุ้นไทย SET'],
+  H:['ตอนนี้เข้าได้ไหม','ข่าวถัดไปคืออะไร','ทำไมห้ามเทรด'],
+  R:['เสี่ยงเท่าไหร่','ขนาดไม้เท่าไหร่','สถิติเป็นยังไง','ควรลดไม้ไหม'],
+  C:['เข้าตรงไหน','ตอนนี้เหมาะเข้าไหม','ตั้งออเดอร์ยังไง'],
+  G:['สรุปให้ฟังหน่อย','ทำไมถึงคิดแบบนี้','ทีมเห็นตรงกันไหม','ความมั่นใจเท่าไหร่']
+};
+
+function talkTo(k){
+  FOCUS.k=k; go('war');
+  const a=AG[k], p=ENGINE.current, sig=p.sig||teamSignals();
+  chatPush(A(a,'<b>คุยกับ '+a.n+' โดยตรง</b> — '+esc(AGENT_ROLE[k])+'<br>'+agentOpener(k,p,sig)+
+    '<div class="why">💡 ตอนนี้คุยกับ '+a.n+' คนเดียว ถามนอกเรื่องเขาจะบอกให้ไปถามคนอื่น · กด "คุยกับทั้งทีม" เพื่อกลับ</div>'));
+  renderChips();
+  const inp=el('chatIn'); if(inp){ inp.placeholder='ถาม '+a.n+' เรื่อง'+AGENT_TOPIC[k]+'...'; inp.focus(); }
+}
+function talkTeam(){
+  FOCUS.k=null; renderChips();
+  const inp=el('chatIn'); if(inp) inp.placeholder='เช่น เข้าตรงไหน · SL เท่าไหร่ · ทำไมถึงบอกแบบนี้ · สถิติเป็นยังไง';
+  chatPush(A(AG.G,'กลับมาคุยกับทั้งทีมแล้ว — ผมจะส่งคำถามให้คนที่ถนัดที่สุดตอบให้อัตโนมัติ'));
+}
+
+function agentOpener(k,p,sig){
+  const i=MKT.ind,g=MKT.gold;
+  if(k==='B') return 'ราคา <b>$'+nf(g.px)+'</b> · RSI <b>'+nf(i.rsi,1)+'</b> · EMA20 '+nf(i.ema20)+' · EMA50 '+nf(i.ema50)+' · คะแนนเทคนิคที่ผมให้ <b>'+nf(p.factors[0].s+p.factors[1].s+p.factors[2].s+p.factors[3].s+p.factors[4].s)+'</b>';
+  if(k==='L') return esc(MACRO.head)+' · คะแนนที่ผมให้ <b>'+nf(MACRO.score)+'</b>';
+  if(k==='H') return (sig.hana.gate.block?'<b class="r">ตอนนี้ปิดประตู</b> — ':'ประตูเปิดอยู่ · ')+esc(sig.hana.d)+' · คะแนน <b>'+nf(sig.hana.s)+'</b>';
+  if(k==='R') return 'สถานะความเสี่ยง: '+esc(sig.rex.d)+' · คะแนนที่ผมให้ <b>'+nf(sig.rex.s)+'</b>';
+  if(k==='C') return 'ช่วงตลาด '+esc(sig.coco.sess.n)+' — '+esc(sig.coco.sess.d)+' · คะแนน <b>'+nf(sig.coco.s)+'</b>';
+  return 'มติรอบนี้ <b>'+p.side+'</b> มั่นใจ '+p.conf+'%'+(p.split>0?' (หักจาก '+p.confRaw+'% เพราะทีมเห็นไม่ตรงกัน)':'');
+}
+
+function answerAs(k,qq){
+  const q=String(qq||'').toLowerCase();
+  const p=ENGINE.current, i=MKT.ind, g=MKT.gold, sig=p.sig||teamSignals(), a=AG[k];
+  const off=(who,topic)=>A(a,'เรื่องนี้ไม่ใช่ของผมครับ — <b>'+AG[who].n+'</b> ดู'+topic+' กดปุ่ม 💬 บนการ์ดของเขาได้เลย'+
+    '<div class="why">💡 ผมตอบเฉพาะ'+AGENT_TOPIC[k]+' — การให้แต่ละคนตอบเฉพาะเรื่องที่ตัวเองรับผิดชอบ ทำให้คุณรู้ว่าคำตอบมาจากฐานอะไร ไม่ใช่ความเห็นลอยๆ</div>');
+
+  const isTech=/rsi|ema|atr|กราฟ|เทรนด|อินดิเค|กรอบ|เส้น|โมเมนตัม/.test(q);
+  const isMacro=/เฟด|fed|ดอกเบี้ย|เงินเฟ้อ|ดอลลาร|dxy|มหภาค|ยีลด|คู่เงิน|บาท|thb|set|หุ้นไทย/.test(q);
+  const isNews=/ข่าว|news|ประตู|เข้าได้ไหม|ห้าม|ปฏิทิน/.test(q);
+  const isRisk=/เสี่ยง|risk|ขนาด|lot|สถิติ|แพ้|ชนะ|ขาดทุน|drawdown/.test(q);
+  const isExec=/เข้าตรงไหน|ออเดอร์|limit|สภาพคล่อง|spread|จังหวะ/.test(q);
+
+  if(k==='B'){
+    if(isMacro&&!isTech) return off('L','ภาพใหญ่เศรษฐกิจและค่าเงิน');
+    if(isRisk&&!isTech) return off('R','ความเสี่ยงและขนาดไม้');
+    if(isNews&&!isTech) return off('H','ข่าวและจังหวะห้ามเทรด');
+    const a20=g.px>i.ema20, a50=g.px>i.ema50, up=i.ema20>i.ema20p;
+    if(/atr|ผันผวน/.test(q)) return A(a,'ATR(14) H1 = <b>$'+nf(i.atr)+'</b> = '+nf(i.atr/g.px*100,2)+'% ของราคา — ปกติราคาแกว่งชั่วโมงละประมาณนี้'+
+      '<div class="why">💡 ผมใช้ ATR กำหนดระยะ SL — ตั้งแคบกว่า ATR มากคือเปิดโอกาสให้การแกว่งปกติเขี่ยไม้ออกก่อนแผนได้ผล ไม่เกี่ยวกับอ่านตลาดผิด</div>');
+    if(/กรอบ|สูงสุด|ต่ำสุด/.test(q)){ const rg=i.hi24-i.lo24, ps=rg>0?(g.px-i.lo24)/rg*100:50;
+      return A(a,'กรอบ 24 ชม. <b>'+nf(i.lo24)+' – '+nf(i.hi24)+'</b> · ราคาอยู่ <b>'+Math.round(ps)+'%</b> ของกรอบ'+
+      '<div class="why">💡 '+(ps>85?'ชิดกรอบบน — ซื้อตรงนี้คือไล่ราคา ระยะ SL ยาว R:R แย่':ps<15?'ชิดกรอบล่าง — โซนที่แรงขายมักเริ่มหมดแรง':'อยู่กลางกรอบ ยังไม่ให้ข้อได้เปรียบฝั่งไหน')+'</div>');}
+    if(/rsi/.test(q)) return A(a,'RSI(14) H1 = <b>'+nf(i.rsi,1)+'</b> — '+(i.rsi>=70?'ตึงเกิน เสี่ยงย่อ':i.rsi>=55?'ขาขึ้นที่ยังมีที่วิ่ง':i.rsi>45?'กลางๆ ไม่ให้สัญญาณ':i.rsi>30?'ฝั่งขายคุมอยู่':'ขายมากเกิน เสี่ยงเด้ง')+' · จาก '+(i.bars||0)+' แท่งจริง'+
+      '<div class="why">💡 RSI วัดว่าแรงขึ้นเฉลี่ยชนะแรงลงเฉลี่ยแค่ไหนใน 14 แท่ง — 50 คือสมดุล เกิน 70 หรือต่ำกว่า 30 คือสุดโต่งที่มักตามด้วยการพักตัว</div>');
+    return A(a,'ราคา <b>$'+nf(g.px)+'</b> · EMA20 <b>'+nf(i.ema20)+'</b> '+(up?'ชี้ขึ้น':'ชี้ลง')+' · EMA50 <b>'+nf(i.ema50)+'</b> → ราคา'+(a20&&a50?'<b class="g">อยู่เหนือทั้งคู่</b>':!a20&&!a50?'<b class="r">อยู่ใต้ทั้งคู่</b>':'คั่นกลางสองเส้น')+' · RSI '+nf(i.rsi,1)+
+      '<div class="why">💡 '+(a20&&a50&&up?'เรียงตัวขาขึ้นครบ — ตามเทรนด์ได้เปรียบกว่าสวน':!a20&&!a50&&!up?'เรียงตัวขาลงครบ — ซื้อสวนตรงนี้คือรับมีดที่กำลังตก':'ภาพยังก้ำกึ่ง สัญญาณเทคนิคน้ำหนักน้อย ควรรอให้เลือกทางก่อน')+'</div>');
+  }
+
+  if(k==='L'){
+    if(isTech&&!isMacro) return off('B','กราฟและอินดิเคเตอร์');
+    if(isRisk&&!isMacro) return off('R','ความเสี่ยงและขนาดไม้');
+    const L=(lb,kk)=>{const m=MKT[kk];const d=m.src==='seed'||m.src==='ไม่มีข้อมูล';return lb+' <b>'+(d?'ดึงไม่ได้':nf(m.px,m.d))+'</b>';};
+    if(/บาท|thb/.test(q)) return A(a,L('USD/THB','usdthb')+' · '+L('EUR/THB','eurthb')+' · '+L('JPY/THB','jpythb')+' · '+L('CNY/THB','cnythb')+
+      '<div class="why">💡 บาทอ่อนทำให้ทองในไทยแพงขึ้นแม้ทอง spot เท่าเดิม — ราคาทองไทยขยับจากสองแรง ไม่ใช่แรงเดียว</div>');
+    if(/set|หุ้นไทย/.test(q)) return A(a,L('SET','set')+' · '+L('SET50','set50')+
+      '<div class="why">💡 '+(MKT.set.src==='seed'?'แหล่งดัชนีไทยถูกเบราว์เซอร์บล็อกอยู่ ผมจึงไม่แสดงตัวเลข — โชว์เลขมั่วให้คุณเอาไปตัดสินใจ แย่กว่าบอกตรงๆ ว่าไม่มี':'เป็นราคาปิดสิ้นวัน ไม่ใช่ราคาสดระหว่างวัน')+'</div>');
+    if(/คู่เงิน|forex|ดอลลาร|eur|usd|jpy|gbp|aud|chf/.test(q)) return A(a,L('EURUSD','eurusd')+' · '+L('GBPUSD','gbpusd')+' · '+L('USDJPY','usdjpy')+' · '+L('AUDUSD','audusd')+' · '+L('USDCHF','usdchf')+' · '+L('EURJPY','eurjpy')+
+      '<div class="why">💡 ค่าเงินชุดนี้อ้างอิง ECB อัปเดตวันละครั้ง ใช้ดูทิศดอลลาร์กว้างๆ ไม่ใช่ราคาเข้าออเดอร์</div>');
+    return A(a,esc(MACRO.head)+'<br>คะแนนที่ผมให้ <b>'+nf(MACRO.score)+'</b> (ณ '+esc(MACRO.asOf)+')'+
+      '<div class="why">💡 '+esc(MACRO.why)+'</div>');
+  }
+
+  if(k==='H'){
+    if((isTech||isRisk)&&!isNews) return off(isTech?'B':'R',isTech?'กราฟและอินดิเคเตอร์':'ความเสี่ยงและขนาดไม้');
+    const gt=sig.hana.gate, nx=sig.hana.nx;
+    return A(a,(gt.block?'<b class="r">ตอนนี้ปิดประตู — '+esc(gt.name)+'</b> ห่าง '+Math.abs(gt.mins)+' นาที ห้ามเปิดไม้ใหม่<br>':'<b class="g">ประตูเปิด เข้าได้</b><br>')+
+      'ข่าวถัดไป <b>'+esc(nx.n)+'</b> · '+esc(nx.when)+' · ผลต่อทอง <b>'+esc(nx.gold)+'</b> · คะแนนที่ผมให้ <b>'+nf(sig.hana.s)+'</b>'+
+      (nx.note?'<div class="why">📌 '+esc(nx.note)+'</div>':'')+'<div class="why">💡 '+sig.hana.w+'</div>');
+  }
+
+  if(k==='R'){
+    if((isTech||isMacro)&&!isRisk) return off(isTech?'B':'L',isTech?'กราฟและอินดิเคเตอร์':'ภาพใหญ่เศรษฐกิจ');
+    const st=TRACK.stats('ai');
+    if(/สถิติ|แพ้|ชนะ|drawdown|ผลงาน/.test(q))
+      return A(a,(st.n?'ปิดแล้ว <b>'+st.n+'</b> ไม้ · ชนะ <b>'+nf(st.wr,0)+'%</b> ('+st.w+'W/'+st.l+'L) · คาดหวังต่อไม้ <b class="'+sgn(st.exp)+'">'+(st.exp>0?'+':'')+nf(st.exp,2)+'R</b><br>ชนะเฉลี่ย +'+nf(st.avgW,2)+'R · แพ้เฉลี่ย '+nf(st.avgL,2)+'R · ถอยลึกสุด -'+nf(st.dd,1)+'R'+(st.legacy?'<br><span class="a">ไม่นับ '+st.legacy+' ไม้ที่วัดด้วยระบบเดิม</span>':'')
+        :'ยังไม่มีไม้ที่ปิดแล้วให้วัดผล — รอเข้า '+st.pending+' · เปิดอยู่ '+st.open)+
+      '<div class="why">💡 ตัวเลขที่ต้องดูคือคาดหวังต่อไม้ ไม่ใช่ % ชนะ — R:R 1:'+CFG.tp1R+' ชนะแค่ 40% ก็ยังกำไร แต่ถ้าคาดหวังติดลบเกิน 20 ไม้ แปลว่าเกณฑ์ต้องรื้อ · ผลทุกไม้ไล่จากแท่งเทียนจริง ไม่ได้เดา</div>');
+    return A(a,(p.side==='WAIT'?'ยังไม่มีไม้ให้คุม — เงินสดคือสถานะที่ปลอดภัยที่สุดตอนสัญญาณไม่ชัด'
+      :'อนุมัติ <b>'+p.lot+' lot</b> · SL <b class="r">$'+nf(p.sl)+'</b> ห่างจุดเข้า $'+nf(p.r)+' · เสียสูงสุด <b class="r">$'+nf(p.riskUsd,0)+'</b> = '+CFG.risk+'% ของพอร์ต')+
+      '<br>ข้อสังเกต: '+esc(sig.rex.d)+' · คะแนนที่ผมให้ <b>'+nf(sig.rex.s)+'</b>'+
+      '<div class="why">💡 '+sig.rex.w+'</div>');
+  }
+
+  if(k==='C'){
+    if((isTech||isMacro||isRisk)&&!isExec) return off(isTech?'B':isMacro?'L':'R',isTech?'กราฟ':isMacro?'ภาพใหญ่เศรษฐกิจ':'ความเสี่ยง');
+    if(p.side==='WAIT') return A(a,'ยังไม่มีออเดอร์ให้ตั้ง — ทีมยังไม่ให้เข้า · ช่วงตลาด <b>'+esc(sig.coco.sess.n)+'</b> '+esc(sig.coco.sess.d)+
+      '<div class="why">💡 '+sig.coco.w+'</div>');
+    return A(a,'ตั้ง limit '+(p.side==='LONG'?'<b class="g">buy</b>':'<b class="r">sell</b>')+' ที่ <b>$'+nf(p.entryRef)+'</b> (โซน '+nf(p.entryLo)+'–'+nf(p.entryHi)+') พร้อม SL '+nf(p.sl)+' TP1 '+nf(p.tp1)+
+      '<br>ราคาตอนนี้ '+nf(g.px)+' — '+(p.inZone?'<b class="g">อยู่ในโซนแล้ว เข้าได้เลย</b>':'ห่างโซนอีก $'+nf(Math.abs(p.side==='LONG'?g.px-p.entryHi:p.entryLo-g.px)))+
+      '<br>ช่วงตลาด <b>'+esc(sig.coco.sess.n)+'</b> — '+esc(sig.coco.sess.d)+
+      '<div class="why">💡 '+sig.coco.w+'</div>');
+  }
+
+  const top=p.factors.slice().sort((x,y)=>Math.abs(y.s)-Math.abs(x.s)).slice(0,3);
+  const lst=agentList(), bl=lst.filter(x=>x.s>0.4).map(x=>x.n), br=lst.filter(x=>x.s<-0.4).map(x=>x.n);
+  return A(a,'มติ <b>'+p.side+'</b> · มั่นใจ <b>'+p.conf+'%</b>'+(p.split>0?' (หักจาก '+p.confRaw+'% เพราะทีมเห็นไม่ตรงกัน)':'')+
+    '<br>ปัจจัยที่มีน้ำหนักสุด:<br>'+top.map(f=>'• '+esc(f.n)+' <b class="'+sgn(f.s)+'">'+(f.s>0?'+':'')+nf(f.s)+'</b>').join('<br>')+
+    '<br>'+(bl.length&&br.length?'<b class="a">เสียงแตก</b> — '+bl.join('/')+' หนุน · '+br.join('/')+' ค้าน':bl.length?'ทั้งทีมหนุนทางเดียว':br.length?'ทั้งทีมค้านทางเดียว':'ไม่มีใครเห็นสัญญาณชัด')+
+    '<div class="why">💡 '+(bl.length&&br.length?'เวลาเสียงแตกผมไม่นับหัว แต่ดูว่าข้อค้านเป็นเรื่อง "รอได้" หรือ "ห้ามฝืน" — ข้อค้านจาก Rex กับ Hana ห้ามฝืน เพราะผูกกับเงินที่เสียได้จริง':'ทุกปัจจัยถูกให้น้ำหนักไว้ก่อนเห็นราคา จึงไม่มีการเลือกเหตุผลมาเข้าข้างคำตอบทีหลัง')+'</div>');
+}
 
 function answer(qq){
   const q=qq.toLowerCase(), p=ENGINE.current, i=MKT.ind, g=MKT.gold;
