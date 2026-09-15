@@ -1301,9 +1301,9 @@ document.querySelectorAll('.ca-btn').forEach(b => {
 // ═══ Shared in-memory state — single source of truth, synced across pages ═══
 const NOOK = {
   goals: {
-    thisMonth: { label:'เดือนนี้ (Jul 2026)', target:'+8% · $220K',  progress:64, note:'โฟกัส gold swing + คุม drawdown' },
-    nextMonth: { label:'เดือนหน้า (Aug 2026)', target:'+6% · $180K',  progress:0,  note:'รอบ earnings + Fed meeting' },
-    year2026:  { label:'ทั้งปี 2026',          target:'+75% · $2.4M', progress:38, note:'ทบต้นกำไร · max DD 12%' },
+    thisMonth: { month:'2026-09', label:'เดือนนี้ (ก.ย. 2026)',  target:'+8% · $220K',  progress:0,  note:'โฟกัส gold swing + คุม drawdown · กด ✏️ Edit เพื่อกรอกความคืบหน้า' },
+    nextMonth: { month:'2026-10', label:'เดือนหน้า (ต.ค. 2026)', target:'+6% · $180K',  progress:0,  note:'รอบ earnings + Fed meeting' },
+    year2026:  { year:2026,       label:'ทั้งปี 2026',            target:'+75% · $2.4M', progress:38, note:'ทบต้นกำไร · max DD 12%' },
   },
   gold: {
     bias:'ระมัดระวัง — ย่อต่อเนื่อง (spot ~$4,263 · 15 ก.ย.)', updated:'—',
@@ -1316,6 +1316,30 @@ const NOOK = {
   head:'',
 };
 
+// ═══ Goals auto-roll — ให้ label เดือนตรงกับวันที่จริงเสมอ (แก้ปัญหา Goal ไม่อัปเดต) ═══
+var TH_MON=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+function ymNow(){var d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2);}
+function ymAdd(ym,n){var a=ym.split('-'),y=+a[0],m=+a[1]-1+n;y+=Math.floor(m/12);m=((m%12)+12)%12;return y+'-'+('0'+(m+1)).slice(-2);}
+function ymLabel(ym){var a=ym.split('-');return TH_MON[+a[1]-1]+' '+a[0];}
+function rollGoals(){
+  var g=NOOK.goals, cur=ymNow();
+  if(g.thisMonth.month!==cur){
+    var inherit=(g.nextMonth.month===cur)?g.nextMonth:null;
+    g.thisMonth={month:cur,
+                 target:inherit?inherit.target:g.thisMonth.target,
+                 progress:0,
+                 note:inherit?inherit.note:g.thisMonth.note};
+    g.nextMonth={month:ymAdd(cur,1),
+                 target:g.nextMonth.target,
+                 progress:0,
+                 note:'ตั้งเป้าใหม่ — กด ✏️ Edit เพื่อกำหนด'};
+  }
+  g.thisMonth.label='เดือนนี้ ('+ymLabel(g.thisMonth.month)+')';
+  g.nextMonth.label='เดือนหน้า ('+ymLabel(g.nextMonth.month)+')';
+  var yr=new Date().getFullYear();
+  if(g.year2026.year!==yr){ g.year2026.year=yr; g.year2026.progress=0; g.year2026.note='ตั้งเป้าปีใหม่ — กด ✏️ Edit เพื่อกำหนด'; }
+  g.year2026.label='ทั้งปี '+g.year2026.year;
+}
 function renderGoals(){
   var g=NOOK.goals, el=document.getElementById('goalsBody'); if(!el) return;
   el.innerHTML=Object.keys(g).map(function(k){var it=g[k];return ''+
@@ -1352,7 +1376,7 @@ function runHeadAnalysis(){
   var t=new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'}); gd.updated=t;
   NOOK.head='<b style="color:var(--gold)">Golden 👑 สรุปทีม</b> · '+t+'<br>'+
     '• Bias ทองคำ: <b style="color:var(--text)">'+gd.bias+'</b> — มี '+gd.scenarios.length+' แผน (Buy / Sell / Wait)<br>'+
-    '• เป้าเดือนนี้: '+g.thisMonth.target+' (คืบ '+g.thisMonth.progress+'%) · เดือนหน้า: '+g.nextMonth.target+' · ทั้งปี 2026: '+g.year2026.target+' (คืบ '+g.year2026.progress+'%)<br>'+
+    '• เป้าเดือนนี้: '+g.thisMonth.target+' (คืบ '+g.thisMonth.progress+'%) · เดือนหน้า: '+g.nextMonth.target+' · '+g.year2026.label+': '+g.year2026.target+' (คืบ '+g.year2026.progress+'%)<br>'+
     '• คำแนะนำหัวหน้าทีม: เข้า BUY เฉพาะเมื่อยืนเหนือแนวรับ · เคารพ SL · คุม size ตาม Rex<br>'+
     '<span style="color:var(--text3);font-size:10px">⚠️ ข้อมูลตัวอย่าง · ไม่ใช่คำแนะนำการลงทุน · ตัดสินใจด้วยตนเอง</span>';
   var el=document.getElementById('headBody'); if(el) el.innerHTML=NOOK.head;
@@ -1516,7 +1540,7 @@ function ecToggle(id){
  if(ch) ch.style.transform=open?'':'rotate(180deg)';
 }
 
-function syncAll(){ renderGoals(); renderGold(); runHeadAnalysis(); renderTeamPreview(); renderEcal(); }
+function syncAll(){ rollGoals(); renderGoals(); renderGold(); runHeadAnalysis(); renderTeamPreview(); renderEcal(); }
 syncAll();
 </script>
 </body>
